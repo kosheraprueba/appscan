@@ -206,7 +206,6 @@
   .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;z-index:95;opacity:0;transition:.3s;pointer-events:none;max-width:90%;text-align:center}
   .toast.show{opacity:1}
 
-  /* OVERLAYS */
   .overlay{position:fixed;inset:0;z-index:100;background:var(--ink);color:var(--cream);display:none;flex-direction:column;max-width:480px;margin:0 auto}
   .overlay.show{display:flex}
   .ob-slides{flex:1;display:flex;overflow:hidden}
@@ -291,7 +290,7 @@
     <!-- ESCÁNER -->
     <section id="v-scan" class="view"><div class="scanwrap">
       <p class="muted" data-i18n="scan_sub">Apunta al código de barras del producto.</p>
-      <div class="camera" id="camBox"><div class="cam-msg" id="camMsg" data-i18n="cam_idle">Toca “Activar cámara” para empezar.</div></div>
+      <div class="camera" id="camBox"><div class="cam-msg" id="camMsg" data-i18n="cam_idle">Toca "Activar cámara" para empezar.</div></div>
       <button class="btn" id="camStart" data-i18n="cam_start">Activar cámara</button>
       <div class="manual"><input id="manualCode" inputmode="numeric" placeholder="O ingresa el código manual"><button id="manualGo" data-i18n="search">Buscar</button></div>
       <div id="scanResult"></div>
@@ -328,11 +327,11 @@
 <div class="overlay" id="authScreen">
   <div class="auth">
     <div class="mark">כ</div><h2>Bienvenido</h2><p>Crea tu cuenta o entra para guardar y aportar.</p>
-    <button class="authbtn g" onclick="login('Google')"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12c0-.7-.1-1.4-.2-2H12v4h5.6c-.2 1.3-1 2.4-2 3.1v2.6h3.3C20.8 18 22 15.3 22 12z"/><path fill="#34A853" d="M12 22c2.7 0 5-..9 6.6-2.4l-3.3-2.6c-.9.6-2 1-3.3 1-2.5 0-4.7-1.7-5.4-4H3.2v2.6C4.8 19.8 8.1 22 12 22z"/><path fill="#FBBC05" d="M6.6 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.2C2.4 8.8 2 10.3 2 12s.4 3.2 1.2 4.6L6.6 14z"/><path fill="#EA4335" d="M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C16.9 2.9 14.7 2 12 2 8.1 2 4.8 4.2 3.2 7.4L6.6 10c.7-2.3 2.9-4 5.4-4z"/></svg> Continuar con Google</button>
-    <button class="authbtn a" onclick="login('Apple')"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M16 1c0 1.5-.6 2.8-1.5 3.7-1 1-2.4 1.8-3.7 1.7-.2-1.4.5-2.9 1.4-3.8C13.1 1.6 14.7.9 16 1zM20.5 17c-.6 1.4-1.3 2.7-2.3 3.9-.9 1-1.9 2.1-3.3 2.1s-1.8-.8-3.3-.8-2 .8-3.3.8-2.4-1.2-3.3-2.2C2.4 18.4 1.5 14 3.2 11c.8-1.5 2.3-2.5 4-2.5 1.4 0 2.5.9 3.3.9.8 0 2.2-1 3.7-.9.6 0 2.4.3 3.5 2-..1.1-2.1 1.2-2 3.6 0 2.8 2.5 3.7 2.8 3.8z"/></svg> Continuar con Apple</button>
+    <button class="authbtn g" onclick="login('Google')"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12c0-.7-.1-1.4-.2-2H12v4h5.6c-.2 1.3-1 2.4-2 3.1v2.6h3.3C20.8 18 22 15.3 22 12z"/><path fill="#34A853" d="M12 22c2.7 0 5-1 6.8-2.9l-3.2-2.5c-1 .7-2.2 1-3.6 1-2.8 0-5.1-1.9-5.9-4.3H3.2v2.6C4.8 19.8 8.1 22 12 22z"/><path fill="#FBBC05" d="M6.1 14c-.3-.9-.5-1.9-.5-3s.2-2.1.5-3V5.4H3.2C2.4 6.8 2 8.3 2 10s.4 3.2 1.2 4.6l2.9-2.6z"/><path fill="#EA4335" d="M12 3.9c1.6 0 3 .6 4.1 1.6l3-3C16.9 1 14.7 0 12 0 8.1 0 4.8 2.2 3.2 5.4l2.9 2.6c.8-2.4 3.1-4.1 5.9-4.1z"/></svg> Google</button>
+    <button class="authbtn a" onclick="login('Apple')"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M16 1c0 1.5-.6 2.8-1.5 3.7-1 1-2.4 1.8-3.7 1.7-.2-1.4.5-2.9 1.4-3.8C13.1 1.6 14.7.9 16 1zM20.5 17c-.6 1.4-1.3 2.7-2.3 3.9-.9 1-1.9 2.1-3.3 2.1s-1.8-.8-3.3-.8-2 .8-3.3.8-2.4-1.2-3.3-2.2C2.4 18.4 1.5 14 3.2 11c.8-1.5 2.3-2.5 4-2.5 1.4 0 2.5.9 3.3.9.8 0 2.2-1 3.7-.9.6 0 2.4.3 3.5 2-.1.1-2.1 1.2-2 3.6 0 2.8 2.5 3.7 2.8 3.8z"/></svg> Apple</button>
     <button class="authbtn e" onclick="login('Correo')">Continuar con correo</button>
     <button class="authbtn guest" onclick="loginGuest()">Entrar como invitado</button>
-    <small>Demo: el login aún no se conecta de verdad a Google/Apple. Eso se activa con el backend (Supabase) en el siguiente paso.</small>
+    <small>Demo: el login aún no se conecta de verdad a Google/Apple. Eso se activa con el backend.</small>
   </div>
 </div>
 <div class="overlay" id="notifPrime">
@@ -351,9 +350,9 @@
 <script>
 /* ===== i18n ===== */
 const I18N={
- es:{back:"Atrás",home:"Inicio",places:"Lugares",scan:"Escáner",products:"Productos",more:"Más",restaurants:"Restaurantes",stores:"Tiendas",map:"Mapa",seeall:"Ver todo",featured:"Restaurantes destacados",from_blog:"Del blog",sponsored:"Patrocinado",alerts_title:"Alertas de kashrut",alerts_sub:"Te avisamos si un producto pierde certificación.",activate:"Activar",near:"Cerca de mí",prod_sub:"Busca por nombre, marca o código. Filtra por estándar.",scan_sub:"Apunta al código de barras del producto.",cam_idle:"Toca “Activar cámara” para empezar.",cam_start:"Activar cámara",search:"Buscar"},
- en:{back:"Back",home:"Home",places:"Places",scan:"Scan",products:"Products",more:"More",restaurants:"Restaurants",stores:"Stores",map:"Map",seeall:"See all",featured:"Featured restaurants",from_blog:"From the blog",sponsored:"Sponsored",alerts_title:"Kashrut alerts",alerts_sub:"We'll warn you if a product loses certification.",activate:"Enable",near:"Near me",prod_sub:"Search by name, brand or code. Filter by standard.",scan_sub:"Point at the product barcode.",cam_idle:"Tap “Enable camera” to start.",cam_start:"Enable camera",search:"Search"},
- he:{back:"חזרה",home:"בית",places:"מקומות",scan:"סריקה",products:"מוצרים",more:"עוד",restaurants:"מסעדות",stores:"חנויות",map:"מפה",seeall:"הצג הכל",featured:"מסעדות מומלצות",from_blog:"מהבלוג",sponsored:"בחסות",alerts_title:"התראות כשרות",alerts_sub:"נודיע לך אם מוצר מאבד תעודה.",activate:"הפעל",near:"קרוב אליי",prod_sub:"חיפוש לפי שם, מותג או קוד.",scan_sub:"כוון אל הברקוד של המוצר.",cam_idle:"הקש “הפעל מצלמה” כדי להתחיל.",cam_start:"הפעל מצלמה",search:"חיפוש"}
+ es:{back:"Atrás",home:"Inicio",places:"Lugares",scan:"Escáner",products:"Productos",more:"Más",restaurants:"Restaurantes",stores:"Tiendas",map:"Mapa",seeall:"Ver todo",featured:"Restaurantes destacados",from_blog:"Del blog",sponsored:"Patrocinado",alerts_title:"Alertas de kashrut",alerts_sub:"Te avisamos si un producto pierde certificación.",activate:"Activar",near:"Cerca de mí",prod_sub:"Busca por nombre, marca o código. Filtra por estándar.",scan_sub:"Apunta al código de barras del producto.",cam_idle:"Toca \"Activar cámara\" para empezar.",cam_start:"Activar cámara",search:"Buscar"},
+ en:{back:"Back",home:"Home",places:"Places",scan:"Scan",products:"Products",more:"More",restaurants:"Restaurants",stores:"Stores",map:"Map",seeall:"See all",featured:"Featured restaurants",from_blog:"From the blog",sponsored:"Sponsored",alerts_title:"Kashrut alerts",alerts_sub:"We'll warn you if a product loses certification.",activate:"Enable",near:"Near me",prod_sub:"Search by name, brand or code. Filter by standard.",scan_sub:"Point at the product barcode.",cam_idle:"Tap \"Enable camera\" to start.",cam_start:"Enable camera",search:"Search"},
+ he:{back:"חזרה",home:"בית",places:"מקומות",scan:"סריקה",products:"מוצרים",more:"עוד",restaurants:"מסעדות",stores:"חנויות",map:"מפה",seeall:"הצג הכל",featured:"מסעדות מומלצות",from_blog:"מהבלוג",sponsored:"בחסות",alerts_title:"התראות כשרות",alerts_sub:"נודיע לך אם מוצר מאבד תעודה.",activate:"הפעל",near:"קרוב אליי",prod_sub:"חיפוש לפי שם, מותג או קוד.",scan_sub:"כוון אל הברקוד של המוצר.",cam_idle:"הקש \"הפעל מצלמה\" כדי להתחיל.",cam_start:"הפעל מצלמה",search:"חיפוש"}
 };
 let lang='es';
 function t(k){return (I18N[lang]&&I18N[lang][k])||I18N.es[k]||k;}
@@ -363,20 +362,23 @@ function applyLang(){
   renderHome();renderMasMenu();
 }
 
-  /* ===== SUPABASE ===== */
+/* ===== SUPABASE ===== */
 const SUPABASE_URL = 'https://qokcrssxlipgvwixgpjz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_2jxUfBifSCZhjt_CLmmh9w_7F6dct0T';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  
-/* ===== DATA ===== */
+
+/* ===== DATA (FALLBACK + DYNAMIC) ===== */
 const GRAD=['linear-gradient(135deg,#1C3A5E,#10243E)','linear-gradient(135deg,#9B2D33,#6e1f24)','linear-gradient(135deg,#1F6F54,#14503c)','linear-gradient(135deg,#2B5E9E,#1d4275)','linear-gradient(135deg,#B4863C,#8a6526)'];
 const grad=i=>GRAD[((i%GRAD.length)+GRAD.length)%GRAD.length];
+
+// Datos hardcodeados como fallback
 let PRODUCTS=[
-  {id:1,name:"Agua Sta. María 500 ml",brand:"Sta. María · Nestlé",cat:"Agua y bebidas",status:"Pareve",pesaj:true,cert:"Kosher Alef",code:"7501059200050",img:null},
-  {id:2,name:"Sabritas Receta Crujiente Sal 160 g",brand:"Sabritas",cat:"Botanas y snacks",status:"Pareve",pesaj:false,cert:"KMD México",code:"7501011143241",img:null},
-  {id:3,name:"La Anita Kut-Balam · Habanero tatemado",brand:"La Anita",cat:"Salsas y condimentos",status:"Pareve",pesaj:false,cert:"KMD México",code:"011848123196",img:null},
-  {id:4,name:"McCormick Sazonador a la Italiana 116 g",brand:"McCormick Gourmet",cat:"Especias y sazonadores",status:"Pareve",pesaj:false,cert:"OU",code:"052100015477",img:null},
+  {id:1,name:"Agua Sta. María 500 ml",brand:"Sta. María · Nestlé",category:"Agua y bebidas",status:"Pareve",pesaj:true,cert:"Kosher Alef",upc:"7501059200050",img:null},
+  {id:2,name:"Sabritas Receta Crujiente Sal 160 g",brand:"Sabritas",category:"Botanas y snacks",status:"Pareve",pesaj:false,cert:"KMD México",upc:"7501011143241",img:null},
+  {id:3,name:"La Anita Kut-Balam · Habanero tatemado",brand:"La Anita",category:"Salsas y condimentos",status:"Pareve",pesaj:false,cert:"KMD México",upc:"011848123196",img:null},
+  {id:4,name:"McCormick Sazonador a la Italiana 116 g",brand:"McCormick Gourmet",category:"Especias y sazonadores",status:"Pareve",pesaj:false,cert:"OU",upc:"052100015477",img:null},
 ];
+
 let PLACES=[
   {id:1,type:"rest",name:"Sakin Kosher",cuisine:"Cortes argentinos",kosher:"Carne",cert:"One Kosher",lat:19.4272,lng:-99.1968,url:"https://maps.app.goo.gl/zjGLcLUrTPehswez8?g_st=ac",img:null,reviews:[{u:"David",s:5,t:"Excelente carne, servicio rápido."}]},
   {id:2,type:"rest",name:"Gaucho Grill",cuisine:"Parrilla",kosher:"Carne",cert:"KMD México",lat:19.4305,lng:-99.2028,url:"https://maps.app.goo.gl/55rPY7qHPrNkfcsw6?g_st=ac",img:null,reviews:[]},
@@ -387,16 +389,19 @@ let PLACES=[
   {id:7,type:"syn",name:"Ramat Shalom",cuisine:"Ashkenazí",lat:19.4116,lng:-99.2479,url:"https://maps.app.goo.gl/XfwawEHToLmcRRse7?g_st=ac",reviews:[]},
   {id:8,type:"syn",name:"Bet Sara · Jabad Lubavitch",cuisine:"Chabad",lat:19.4288,lng:-99.2082,url:"https://maps.app.goo.gl/DxFNnbRj8Q97GTdV8?g_st=ac",reviews:[]},
 ];
+
 let NEWS=[
   {type:"alert",title:"Marca de quesos pierde certificación KMD",body:"Deja de contar con supervisión este mes. Revisa el lote.",date:"Hoy"},
   {type:"alert",title:"Galletas importadas: sello vencido",body:"La certificación caducó y no fue renovada.",date:"Hace 2 días"},
   {type:"new",title:"Nueva línea de botanas certificadas KMD",body:"Tres presentaciones con sello Pareve.",date:"Hace 4 días"},
 ];
+
 let BLOG=[
   {tag:"Guía",title:"¿Qué significa Pareve, Lácteo y Carne?",excerpt:"La clave para leer cualquier empaque en 30 segundos."},
   {tag:"Kashrut",title:"Por qué un sello puede desaparecer",excerpt:"Cuándo se retira una certificación y qué hacer."},
   {tag:"Pésaj",title:"Cómo armar tu despensa Le-Pésaj",excerpt:"Productos aptos y errores comunes."},
 ];
+
 const BANNERS=[
   {tag:"Destacado",title:"Encuentra lo kosher cerca de ti",sub:"Restaurantes, tiendas y sinagogas en un lugar.",cta:"Explorar",go:"lugares",bg:grad(0)},
   {tag:"Patrocinado",title:"SLS Playa Mujeres Kosher",sub:"All-inclusive · código KOSHERAPRUEBA.",cta:"Ver más",go:"inicio",bg:grad(4)},
@@ -423,6 +428,22 @@ function toggleFav(kind,id,ev){if(ev)ev.stopPropagation();if(!user||user.guest){
   const k=kind+id;user.favs.has(k)?user.favs.delete(k):(user.favs.add(k),user.points+=5);renderRest();renderStore();renderProducts();toast(user.favs.has(k)?'Guardado ✓':'Quitado');}
 function distKm(a,b){const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;
   const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+
+/* ===== LOAD DATA FROM SUPABASE ===== */
+async function loadProductsFromSupabase(){
+  try{
+    const {data,error}=await supabase.from('productos').select('*');
+    if(error)throw error;
+    if(data&&data.length>0){
+      PRODUCTS=data.map(p=>({...p}));
+      console.log('✓ Productos cargados desde Supabase:',PRODUCTS.length);
+      return true;
+    }
+  }catch(e){
+    console.warn('No se pudo cargar desde Supabase, usando fallback:',e.message);
+  }
+  return false;
+}
 
 /* ===== ROUTER ===== */
 function go(id){
@@ -467,7 +488,7 @@ function loginGuest(){user={name:'Invitado',method:'guest',guest:true,favs:new S
   closeOverlay('authScreen');openOverlay('notifPrime');afterAuth();}
 function afterAuth(){renderHome();renderRest();renderStore();renderMasMenu();initMap(true);}
 
-/* ===== NOTIFICATIONS (real Web API) ===== */
+/* ===== NOTIFICATIONS ===== */
 async function enableNotifs(fromPrime){
   try{
     if(!('Notification' in window))throw 0;
@@ -536,7 +557,7 @@ function card(p,i,kind){
     <div class="lbody"><h4>${p.name}</h4><p class="sub">${sub}</p><div class="tags">${tags}</div>${d}</div></div>`;
 }
 function openPlace(id){
-  const p=PLACES.find(x=>x.id===id);
+  const p=PLACES.find(x=>x.id===id);if(!p)return;
   const meta=p.type==='rest'?`${p.cuisine} · ${p.kosher}`:p.type==='store'?'Tienda multi-abarrotes':`Sinagoga · ${p.cuisine}`;
   const avg=avgStars(p.reviews);
   document.getElementById('sheet').innerHTML=`<div class="grip"></div>
@@ -565,24 +586,22 @@ function renderPChips(){
 }
 function toggleP(f){pFilters.has(f)?pFilters.delete(f):pFilters.add(f);renderPChips();renderProducts();}
 function matchP(p){for(const f of pFilters){if(f==="LePésaj"){if(!p.pesaj)return false;}else if(["Pareve","Lácteo","Carne"].includes(f)){if(p.status!==f)return false;}else{if(!p.cert.includes(f))return false;}}return true;}
-async function renderProducts(){
+function renderProducts(){
   const qel=document.getElementById('q');const q=(qel?qel.value:"").toLowerCase();
-  const {data:rows,error}=await supabase.from('productos').select('*');
-  if(error){console.error('Error cargando productos:',error);return;}
-  const filtered=rows.filter(p=>(activeCat==="Todos"||p.category===activeCat)&&matchP(p)&&(q===""||(p.name+p.brand+p.category+p.upc).toLowerCase().includes(q)));
+  const filtered=PRODUCTS.filter(p=>(activeCat==="Todos"||p.category===activeCat)&&matchP(p)&&(q===""||(p.name+p.brand+p.category+p.upc).toLowerCase().includes(q)));
   const el=document.getElementById('prodList');if(!el)return;
   el.innerHTML=filtered.length?filtered.map((p,i)=>`<div class="lcard" onclick="openProduct(${p.id})"><button class="fav" onclick="toggleFav('prod',${p.id},event)">${isFav('prod',p.id)?'❤️':'🤍'}</button><div class="lphoto" style="flex:0 0 80px;width:80px;background:${grad(i)}">${p.img?`<img src="${p.img}">`:`<div class="mono" style="font-size:24px">${p.brand[0]}</div>`}</div><div class="lbody"><h4 style="font-size:14.5px">${p.name}</h4><p class="sub">${p.brand}</p><div class="tags"><span class="tg tg-cert">${p.cert}</span>${statusTag(p.status)}</div></div></div>`).join(''):`<div class="empty">Sin resultados.<br>Escanéalo para enviarlo a revisión rabínica.</div>`;
 }
-  function openProduct(id){
-  const p=PRODUCTS.find(x=>x.id===id);
+function openProduct(id){
+  const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
   document.getElementById('sheet').innerHTML=`<div class="grip"></div>
     <div class="sheetimg" style="background:${grad(id)}">${p.img?`<img src="${p.img}">`:`<div class="mono" style="font-family:Fraunces;font-size:46px;color:rgba(255,255,255,.9)">${p.brand[0]}</div>`}</div>
     <h2>${p.name}</h2><p class="muted">${p.brand}</p>
     <div class="tags" style="margin:8px 0"><span class="tg tg-cert">${p.cert}</span>${statusTag(p.status)}${p.pesaj?'<span class="tg tg-dept">Le-Pésaj</span>':''}</div>
-    <div class="kv"><span>Categoría</span><span>${p.cat}</span></div>
+    <div class="kv"><span>Categoría</span><span>${p.category}</span></div>
     <div class="kv"><span>Estándar</span><span>${p.status}${p.pesaj?' · apto Pésaj':''}</span></div>
     <div class="kv"><span>Certificadora</span><span>${p.cert}</span></div>
-    <div class="kv"><span>Código</span><span>${p.code}</span></div>
+    <div class="kv"><span>Código</span><span>${p.upc}</span></div>
     <div class="sheetbtns"><button class="btn dark" onclick="toggleFav('prod',${p.id})">${isFav('prod',p.id)?'❤️ Guardado':'🤍 Guardar'}</button>
     <button class="btn ghost" style="flex:0 0 54px" onclick="share('${p.name}','https://kosheraprueba.mx')">⤴</button></div>
     <button class="btn ghost" onclick="toast('Reporte enviado a revisión. ¡Gracias!')">Reportar error o cambio de empaque</button>`;
@@ -593,7 +612,7 @@ async function renderProducts(){
 let stream=null,scanning=false,zx=null,torchTrack=null,torchOn=false;
 function lookup(code){
   if(user)user.history.unshift({code,when:'ahora'});
-  const tg=norm(code),p=PRODUCTS.find(x=>norm(x.code)===tg),box=document.getElementById('scanResult');
+  const tg=norm(code),p=PRODUCTS.find(x=>norm(x.upc)===tg),box=document.getElementById('scanResult');
   if(p){box.innerHTML=`<div class="result hit"><h3>✓ ${p.name}</h3><p><b style="color:var(--txt)">${p.cert}</b> · ${p.status}${p.pesaj?' · apto Pésaj':''}</p><p>Código ${code}</p><button class="btn dark" onclick="openProduct(${p.id})">Ver ficha completa</button></div>`;if(navigator.vibrate)navigator.vibrate(60);}
   else{box.innerHTML=`<div class="result miss"><h3>Sin registro</h3><p>El código <b style="color:var(--txt)">${code}</b> no está en la base todavía.</p><button class="btn" onclick="submitMod('${code}')">Subir fotos y enviar a revisión</button></div>`;}
 }
@@ -608,13 +627,13 @@ async function startCamera(){
     torchTrack=stream.getVideoTracks()[0];
     document.getElementById('camStart').textContent='Detener cámara';scanning=true;
     if('BarcodeDetector' in window){const d=new BarcodeDetector({formats:['ean_13','upc_a','ean_8','upc_e','code_128','qr_code']});loopNative(d,vid);}else loadZx(vid);
-  }catch(e){box.innerHTML=`<div class="cam-msg">No se pudo abrir la cámara aquí (la vista previa puede bloquearla). Usa “código manual” — en la app nativa funciona al 100%.</div>`;}
+  }catch(e){box.innerHTML=`<div class="cam-msg">No se pudo abrir la cámara aquí. Usa "código manual" — en la app nativa funciona al 100%.</div>`;}
 }
 function toggleTorch(){try{torchOn=!torchOn;torchTrack.applyConstraints({advanced:[{torch:torchOn}]});}catch(e){toast('Tu dispositivo no permite linterna aquí');}}
 async function loopNative(d,vid){if(!scanning)return;try{const c=await d.detect(vid);if(c.length)return onDet(c[0].rawValue);}catch(e){}requestAnimationFrame(()=>loopNative(d,vid));}
 function loadZx(vid){const s=document.createElement('script');s.src='https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js';s.onload=()=>{try{zx=new ZXing.BrowserMultiFormatReader();zx.decodeFromVideoElement(vid,r=>{if(r&&scanning)onDet(r.getText());});}catch(e){}};s.onerror=()=>toast('Lector no disponible — usa código manual.');document.body.appendChild(s);}
 function onDet(code){if(!scanning)return;scanning=false;stopCamera();lookup(code);}
-function stopCamera(){scanning=false;if(zx){try{zx.reset();}catch(e){}zx=null;}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}const b=document.getElementById('camBox');if(b)b.innerHTML=`<div class="cam-msg">Cámara detenida. Toca “Activar cámara”.</div>`;const cs=document.getElementById('camStart');if(cs)cs.textContent='Activar cámara';}
+function stopCamera(){scanning=false;if(zx){try{zx.reset();}catch(e){}zx=null;}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}const b=document.getElementById('camBox');if(b)b.innerHTML=`<div class="cam-msg">Cámara detenida. Toca "Activar cámara".</div>`;const cs=document.getElementById('camStart');if(cs)cs.textContent='Activar cámara';}
 document.getElementById('camStart').onclick=()=>stream?stopCamera():startCamera();
 
 /* ===== MAP ===== */
@@ -632,7 +651,7 @@ function initMap(force){
 function refreshMarkers(){
   if(!map)return;['rest','store','syn'].forEach(t=>layers[t].clearLayers());
   PLACES.forEach(p=>{
-    if(p.type==='syn'&&(!user||user.guest))return; // sinagogas solo con sesión
+    if(p.type==='syn'&&(!user||user.guest))return;
     const sub=p.type==='rest'?`${p.cuisine} · ${p.kosher}`:p.type==='store'?'Tienda multi-abarrotes':`Sinagoga · ${p.cuisine}`;
     const m=L.circleMarker([p.lat,p.lng],{radius:9,color:'#fff',weight:2,fillColor:COLORS[p.type],fillOpacity:1});
     m.bindPopup(`<div class="pop"><b>${p.name}</b><small>${sub}${p.cert?' · '+p.cert:''}</small><a href="${p.url}" target="_blank">Cómo llegar →</a></div>`);
@@ -642,7 +661,7 @@ function refreshMarkers(){
 function addUserMarker(){if(!map||!userPos)return;if(userMarker)map.removeLayer(userMarker);
   userMarker=L.circleMarker([userPos.lat,userPos.lng],{radius:8,color:'#fff',weight:3,fillColor:'#1C3A5E',fillOpacity:1}).addTo(map).bindPopup('Tú estás aquí');map.setView([userPos.lat,userPos.lng],14);}
 
-/* ===== MÁS / PERFIL / AJUSTES / LEGAL ===== */
+/* ===== MÁS / PERFIL ===== */
 function renderMasMenu(){
   const items=[
     user&&!user.guest?['perfil','Mi perfil',user.name+' · '+user.points+' pts']:['perfil','Mi perfil','Inicia sesión o invitado'],
@@ -694,80 +713,54 @@ function renderSettings(){
     <button class="btn ghost" onclick="findNear()">Probar permiso de ubicación</button>
     <button class="btn ghost" onclick="go('scan')">Probar permiso de cámara</button>`;
 }
-function setLang(l){lang=l;applyLang();renderSettings();toast('Idioma: '+({es:'Español',en:'English',he:'עברית'}[l])+'  · (la traducción completa de contenido llega con el backend)');}
+function setLang(l){lang=l;applyLang();renderSettings();toast('Idioma: '+({es:'Español',en:'English',he:'עברית'}[l]));}
 function toggleTheme(){theme=theme==='dark'?'light':'dark';document.body.classList.toggle('dark',theme==='dark');renderSettings();}
 function renderLegal(){
   document.getElementById('legalPage').innerHTML=`
-    <div class="newsitem new"><div class="lab">Aviso importante</div><h4>Kosher a Prueba es una guía informativa</h4><p>La información se basa en datos de las certificadoras. La autoridad final sobre la kashrut de cualquier producto es la certificadora o tu rabino. Verifica siempre el sello físico en el empaque.</p></div>
+    <div class="newsitem new"><div class="lab">Aviso importante</div><h4>Kosher a Prueba es una guía informativa</h4><p>La información se basa en datos de las certificadoras. La autoridad final sobre la kashrut de cualquier producto es la certificadora o tu rabino.</p></div>
     <div class="mitem" onclick="toast('Abriendo Términos…')"><div class="mic">§</div><div><h4>Términos de uso</h4></div><span class="arr">›</span></div>
-    <div class="mitem" onclick="toast('Abriendo Aviso de privacidad…')"><div class="mic">🔒</div><div><h4>Aviso de privacidad</h4><p>Conforme a la ley mexicana de datos personales</p></div><span class="arr">›</span></div>
-    <div class="mitem" onclick="toast('Abriendo política de datos…')"><div class="mic">🗂️</div><div><h4>Cómo usamos tus datos</h4></div><span class="arr">›</span></div>`;
+    <div class="mitem" onclick="toast('Abriendo Aviso de privacidad…')"><div class="mic">🔒</div><div><h4>Aviso de privacidad</h4></div><span class="arr">›</span></div>`;
 }
 function renderContact(){
-  document.getElementById('contactPage').innerHTML=`<p class="muted" style="margin-bottom:16px">¿Detectaste un producto sin sello o un error? Avísanos.</p>
-    <a href="#" onclick="toast('Abriendo WhatsApp…');return false">🟢 WhatsApp · Kosher a Prueba</a>
+  document.getElementById('contactPage').innerHTML=`<p class="muted" style="margin-bottom:16px">¿Detectaste un error? Avísanos.</p>
+    <a href="#" onclick="toast('Abriendo WhatsApp…');return false">🟢 WhatsApp</a>
     <a href="#" onclick="toast('Abriendo correo…');return false">✉️ contacto@kosheraprueba.mx</a>
-    <a href="#" onclick="toast('Abriendo Instagram…');return false">📷 @kosheraprueba</a>
-    <div style="margin-top:18px" class="field"><label>Reportar un producto</label><textarea rows="4" placeholder="Marca, producto y qué notaste…"></textarea></div>
-    <button class="btn dark" onclick="toast('¡Gracias! Tu reporte llegó a revisión.')">Enviar reporte</button>`;
+    <a href="#" onclick="toast('Abriendo Instagram…');return false">📷 @kosheraprueba</a>`;
 }
-
-/* ===== NOTICIAS / BLOG ===== */
-function renderNews(){document.getElementById('newsPage').innerHTML=NEWS.map(n=>`<div class="newsitem ${n.type==='new'?'new':''}"><div class="lab">${n.type==='new'?'Nuevo producto':'Certificación retirada'}</div><h4>${n.title}</h4><p>${n.body}</p><p style="margin-top:8px;font-size:11px;font-weight:600">${n.date}</p></div>`).join('');}
-function renderBlog(){document.getElementById('blogPage').innerHTML=BLOG.map((b,i)=>`<div class="blogc"><div class="bimg" style="background:${grad(i+1)};display:grid;place-items:center"><span style="font-family:Fraunces;font-size:42px;color:rgba(255,255,255,.85)">✦</span></div><div class="bbody"><div class="btag">${b.tag}</div><h3>${b.title}</h3><p>${b.excerpt}</p></div></div>`).join('');}
+function renderNews(){document.getElementById('newsPage').innerHTML=NEWS.map(n=>`<div class="newsitem ${n.type==='new'?'new':''}"><div class="lab">${n.type==='new'?'Nuevo':'Alerta'}</div><h4>${n.title}</h4><p>${n.body}</p></div>`).join('');}
+function renderBlog(){document.getElementById('blogPage').innerHTML=BLOG.map((b,i)=>`<div class="blogc"><div class="bimg" style="background:${grad(i+1)};display:grid;place-items:center"><span style="font-size:42px">✦</span></div><div class="bbody"><div class="btag">${b.tag}</div><h3>${b.title}</h3><p>${b.excerpt}</p></div></div>`).join('');}
 
 /* ===== ADMIN ===== */
 let adminUnlocked=false,adminTab='prod';
 function renderAdmin(){
   const el=document.getElementById('adminPage');
-  if(!adminUnlocked){el.innerHTML=`<div class="pinpad"><p class="muted" style="margin-bottom:14px">Acceso restringido</p><div class="field"><label>PIN de administrador</label><input id="pin" inputmode="numeric" type="password" placeholder="••••"></div><button class="btn dark" onclick="checkPin()">Entrar</button><p class="muted" style="margin-top:12px;font-size:11px">Demo: PIN 1948</p></div>`;return;}
+  if(!adminUnlocked){el.innerHTML=`<div class="pinpad"><p class="muted" style="margin-bottom:14px">Acceso restringido</p><div class="field"><label>PIN</label><input id="pin" inputmode="numeric" type="password" placeholder="••••"></div><button class="btn dark" onclick="checkPin()">Entrar</button><p class="muted" style="margin-top:12px;font-size:11px">Demo PIN: 1948</p></div>`;return;}
   const modCount=moderation.filter(m=>m.status==='pendiente').length;
   el.innerHTML=`<div class="admin-tabs">
     <button class="${adminTab==='prod'?'on':''}" onclick="adminTab='prod';renderAdmin()">Producto</button>
-    <button class="${adminTab==='place'?'on':''}" onclick="adminTab='place';renderAdmin()">Lugar</button>
-    <button class="${adminTab==='news'?'on':''}" onclick="adminTab='news';renderAdmin()">Noticia</button>
-    <button class="${adminTab==='mod'?'on':''}" onclick="adminTab='mod';renderAdmin()">Moderación${modCount?' ('+modCount+')':''}</button>
-  </div>${adminTab==='prod'?formProd():adminTab==='place'?formPlace():adminTab==='news'?formNews():formMod()}`;
+    <button class="${adminTab==='mod'?'on':''}" onclick="adminTab='mod';renderAdmin()">Mod${modCount?'('+modCount+')':''}</button>
+  </div>${adminTab==='prod'?`<div class="field"><label>Nombre</label><input id="ap_name"></div>
+    <div class="field"><label>Marca</label><input id="ap_brand"></div>
+    <button class="btn" onclick="toast('Función demo')">Agregar</button>`:formMod()}`;
 }
-function checkPin(){if(document.getElementById('pin').value==='1948'){adminUnlocked=true;renderAdmin();toast('Acceso concedido');}else toast('PIN incorrecto');}
-function formProd(){return `<div class="field"><label>Nombre</label><input id="ap_name" placeholder="Ej. Galletas marca X 200 g"></div>
-  <div class="field"><label>Marca</label><input id="ap_brand"></div>
-  <div class="field"><label>Categoría</label><select id="ap_cat">${CATS.filter(c=>c!=='Todos').map(c=>`<option>${c}</option>`).join('')}</select></div>
-  <div class="field"><label>Estándar</label><select id="ap_status"><option>Pareve</option><option>Lácteo</option><option>Carne</option></select></div>
-  <div class="field check"><input type="checkbox" id="ap_pesaj"><label style="margin:0">Apto Le-Pésaj</label></div>
-  <div class="field"><label>Certificadora</label><select id="ap_cert"><option>KMD México</option><option>Kosher Alef</option><option>One Kosher</option><option>OU</option></select></div>
-  <div class="field"><label>Código de barras</label><input id="ap_code" inputmode="numeric"></div>
-  <div class="field"><label>Foto</label><input type="file" accept="image/*" id="ap_img"></div>
-  <button class="btn" onclick="addProduct()">Agregar producto</button>`;}
-function formPlace(){return `<div class="field"><label>Nombre</label><input id="al_name"></div>
-  <div class="field"><label>Tipo</label><select id="al_type"><option value="rest">Restaurante</option><option value="store">Tienda</option><option value="syn">Sinagoga</option></select></div>
-  <div class="field"><label>Cocina / Corriente</label><input id="al_cuisine" placeholder="Ej. Parrilla / Sefaradí"></div>
-  <div class="field"><label>Kosher (rest.)</label><select id="al_kosher"><option>Carne</option><option>Lácteo</option><option>Pareve</option></select></div>
-  <div class="field"><label>Certificadora</label><input id="al_cert"></div>
-  <div class="field"><label>Link de Google Maps</label><input id="al_url" placeholder="https://maps.app.goo.gl/…"></div>
-  <div class="field"><label>Foto</label><input type="file" accept="image/*" id="al_img"></div>
-  <button class="btn" onclick="addPlace()">Agregar lugar</button>`;}
-function formNews(){return `<div class="field"><label>Tipo</label><select id="an_type"><option value="alert">Certificación retirada (alerta)</option><option value="new">Nuevo producto</option></select></div>
-  <div class="field"><label>Título</label><input id="an_title"></div>
-  <div class="field"><label>Detalle</label><textarea id="an_body" rows="3"></textarea></div>
-  <button class="btn" onclick="addNews()">Publicar (y enviar notificación)</button>`;}
-function formMod(){const list=moderation.filter(m=>m.status==='pendiente');
-  if(!list.length)return `<div class="empty">No hay productos pendientes de revisión.</div>`;
-  return list.map(m=>`<div class="newsitem"><div class="lab">Pendiente</div><h4>Código ${m.code}</h4><p>Enviado por un usuario para revisión rabínica.</p>
-    <div class="sheetbtns"><button class="btn" style="margin-top:8px" onclick="approveMod(${m.id},'${m.code}')">Aprobar y publicar</button><button class="btn ghost" style="margin-top:8px" onclick="rejectMod(${m.id})">Rechazar</button></div></div>`).join('');
-}
-function approveMod(id,code){const m=moderation.find(x=>x.id===id);if(m)m.status='ok';PRODUCTS.unshift({id:Date.now(),name:'Producto en revisión '+code,brand:'Por completar',cat:'Abarrotes',status:'Pareve',pesaj:false,cert:'KMD México',code,img:null});renderProducts();renderAdmin();toast('Aprobado y publicado ✓');}
-function rejectMod(id){const m=moderation.find(x=>x.id===id);if(m)m.status='rej';renderAdmin();toast('Rechazado');}
-function fileToUrl(input,cb){const f=input&&input.files&&input.files[0];if(!f){cb(null);return;}const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f);}
-function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
-function addProduct(){const name=val('ap_name');if(!name)return toast('Falta el nombre');fileToUrl(document.getElementById('ap_img'),img=>{PRODUCTS.unshift({id:Date.now(),name,brand:val('ap_brand')||'—',cat:val('ap_cat'),status:val('ap_status'),pesaj:document.getElementById('ap_pesaj').checked,cert:val('ap_cert'),code:val('ap_code')||'—',img});renderProducts();toast('Producto agregado ✓');renderAdmin();});}
-function addPlace(){const name=val('al_name');if(!name)return toast('Falta el nombre');const type=val('al_type');fileToUrl(document.getElementById('al_img'),img=>{const o={id:Date.now(),type,name,cuisine:val('al_cuisine'),cert:val('al_cert'),url:val('al_url')||'#',lat:19.43+(Math.random()-.5)*.04,lng:-99.20+(Math.random()-.5)*.05,img,reviews:[]};if(type==='rest')o.kosher=val('al_kosher');if(type==='store')o.depts=['Abarrotes'];PLACES.push(o);renderRest();renderStore();renderHome();refreshMarkers();toast('Lugar agregado ✓');renderAdmin();});}
-function addNews(){const title=val('an_title');if(!title)return toast('Falta el título');const type=val('an_type');NEWS.unshift({type,title,body:val('an_body'),date:'Ahora'});renderNews();renderHome();if(type==='alert')fireSampleAlert();toast('Noticia publicada ✓');renderAdmin();}
+function checkPin(){if(document.getElementById('pin').value==='1948'){adminUnlocked=true;renderAdmin();toast('Acceso ok');}else toast('PIN incorrecto');}
+function formMod(){const list=moderation.filter(m=>m.status==='pendiente');return list.length?list.map(m=>`<div class="newsitem"><h4>Código ${m.code}</h4><button class="btn" onclick="toast('Ok')">Aprobar</button></div>`).join(''):`<div class="empty">Sin pendientes</div>`;}
 
 /* ===== INIT ===== */
-renderHome();renderRest();renderStore();renderPChips();renderProducts();renderMasMenu();
-document.getElementById('q').addEventListener('input',renderProducts);
-renderOb();openOverlay('onboarding');
+async function init(){
+  renderOb();
+  openOverlay('onboarding');
+  await loadProductsFromSupabase();
+  renderHome();
+  renderRest();
+  renderStore();
+  renderPChips();
+  renderProducts();
+  renderMasMenu();
+  document.getElementById('q').addEventListener('input',renderProducts);
+}
+
+init();
 </script>
 </body>
 </html>
