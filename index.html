@@ -363,6 +363,11 @@ function applyLang(){
   renderHome();renderMasMenu();
 }
 
+  /* ===== SUPABASE ===== */
+const SUPABASE_URL = 'https://qokcrssxlipgvwixgpjz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_2jxUfBifSCZhjt_CLmmh9w_7F6dct0T';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
 /* ===== DATA ===== */
 const GRAD=['linear-gradient(135deg,#1C3A5E,#10243E)','linear-gradient(135deg,#9B2D33,#6e1f24)','linear-gradient(135deg,#1F6F54,#14503c)','linear-gradient(135deg,#2B5E9E,#1d4275)','linear-gradient(135deg,#B4863C,#8a6526)'];
 const grad=i=>GRAD[((i%GRAD.length)+GRAD.length)%GRAD.length];
