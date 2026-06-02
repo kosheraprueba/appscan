@@ -565,17 +565,15 @@ function renderPChips(){
 }
 function toggleP(f){pFilters.has(f)?pFilters.delete(f):pFilters.add(f);renderPChips();renderProducts();}
 function matchP(p){for(const f of pFilters){if(f==="LePésaj"){if(!p.pesaj)return false;}else if(["Pareve","Lácteo","Carne"].includes(f)){if(p.status!==f)return false;}else{if(!p.cert.includes(f))return false;}}return true;}
-function renderProducts(){
+async function renderProducts(){
   const qel=document.getElementById('q');const q=(qel?qel.value:"").toLowerCase();
-  const rows=PRODUCTS.filter(p=>(activeCat==="Todos"||p.cat===activeCat)&&matchP(p)&&(q===""||(p.name+p.brand+p.cat+p.code).toLowerCase().includes(q)));
+  const {data:rows,error}=await supabase.from('productos').select('*');
+  if(error){console.error('Error cargando productos:',error);return;}
+  const filtered=rows.filter(p=>(activeCat==="Todos"||p.category===activeCat)&&matchP(p)&&(q===""||(p.name+p.brand+p.category+p.upc).toLowerCase().includes(q)));
   const el=document.getElementById('prodList');if(!el)return;
-  el.innerHTML=rows.length?rows.map((p,i)=>`<div class="lcard" onclick="openProduct(${p.id})">
-    <button class="fav" onclick="toggleFav('prod',${p.id},event)">${isFav('prod',p.id)?'❤️':'🤍'}</button>
-    <div class="lphoto" style="flex:0 0 80px;width:80px;background:${grad(i)}">${p.img?`<img src="${p.img}">`:`<div class="mono" style="font-size:24px">${p.brand[0]}</div>`}</div>
-    <div class="lbody"><h4 style="font-size:14.5px">${p.name}</h4><p class="sub">${p.brand}</p><div class="tags"><span class="tg tg-cert">${p.cert}</span>${statusTag(p.status)}${p.pesaj?'<span class="tg tg-dept">Le-Pésaj</span>':''}</div></div></div>`).join('')
-    :`<div class="empty">Sin resultados.<br>Escanéalo para enviarlo a revisión rabínica.</div>`;
+  el.innerHTML=filtered.length?filtered.map((p,i)=>`<div class="lcard" onclick="openProduct(${p.id})"><button class="fav" onclick="toggleFav('prod',${p.id},event)">${isFav('prod',p.id)?'❤️':'🤍'}</button><div class="lphoto" style="flex:0 0 80px;width:80px;background:${grad(i)}">${p.img?`<img src="${p.img}">`:`<div class="mono" style="font-size:24px">${p.brand[0]}</div>`}</div><div class="lbody"><h4 style="font-size:14.5px">${p.name}</h4><p class="sub">${p.brand}</p><div class="tags"><span class="tg tg-cert">${p.cert}</span>${statusTag(p.status)}</div></div></div>`).join(''):`<div class="empty">Sin resultados.<br>Escanéalo para enviarlo a revisión rabínica.</div>`;
 }
-function openProduct(id){
+  function openProduct(id){
   const p=PRODUCTS.find(x=>x.id===id);
   document.getElementById('sheet').innerHTML=`<div class="grip"></div>
     <div class="sheetimg" style="background:${grad(id)}">${p.img?`<img src="${p.img}">`:`<div class="mono" style="font-family:Fraunces;font-size:46px;color:rgba(255,255,255,.9)">${p.brand[0]}</div>`}</div>
