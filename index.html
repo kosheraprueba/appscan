@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Kosher a Prueba</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root{
+    --cream:#F4EFE3;--cream-2:#FBF8F1;--ink:#10243E;--ink-2:#1C3A5E;--ink-soft:#536982;
+    --gold:#B4863C;--gold-2:#C9A05A;--gold-soft:#EADDBF;--line:#E5DCC9;
+    --meat:#9B2D33;--dairy:#2B5E9E;--pareve:#1F6F54;--alert:#B4322F;--white:#fff;
+    --card:#fff;--bg:#F4EFE3;--bg2:#FBF8F1;--txt:#10243E;
+    --shadow:0 10px 34px rgba(16,36,62,.10);--shadow-sm:0 4px 14px rgba(16,36,62,.07);
+  }
+  body.dark{
+    --cream:#0E1A2B;--cream-2:#13243A;--ink:#EAF1FA;--ink-2:#C4D3E6;--ink-soft:#8FA6C0;
+    --line:#22354F;--card:#13243A;--bg:#0B1626;--bg2:#13243A;--txt:#EAF1FA;--gold-soft:#3a3320;
+    --shadow:0 10px 34px rgba(0,0,0,.4);--shadow-sm:0 4px 14px rgba(0,0,0,.3);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:#cdc4b2;color:var(--txt);overscroll-behavior:none}
+  body.dark{background:#060d18}
+  .app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column;box-shadow:0 0 80px rgba(0,0,0,.18);overflow:hidden}
+  ::-webkit-scrollbar{display:none}
+  [dir="rtl"] .app{direction:rtl}
+
+  header{padding:16px 18px 13px;background:var(--ink);color:var(--bg);position:sticky;top:0;z-index:40;border-bottom:3px solid var(--gold);display:flex;align-items:center;justify-content:space-between}
+  body.dark header{background:#0a1422;color:var(--ink)}
+  .brand{display:flex;align-items:center;gap:10px}
+  .mark{width:36px;height:36px;border:1.5px solid var(--gold);border-radius:10px;display:grid;place-items:center;font-family:'Fraunces';font-weight:700;color:var(--gold);font-size:21px}
+  .htitle{font-family:'Fraunces';font-weight:600;font-size:19px;margin:0;line-height:1;color:var(--cream)}
+  body.dark .htitle{color:var(--ink)}
+  .hsub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-soft);font-weight:700;margin-top:3px}
+  body.dark .hsub{color:var(--gold-2)}
+  .hbtns{display:flex;gap:8px;align-items:center}
+  .iconbtn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(180,134,60,.4);background:transparent;display:grid;place-items:center;color:var(--cream);cursor:pointer;position:relative}
+  body.dark .iconbtn{color:var(--ink)}
+  .dot-alert{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--gold-2)}
+  .back{display:none;background:none;border:0;color:var(--cream);cursor:pointer;align-items:center;gap:6px;font-family:inherit;font-weight:600;font-size:14px}
+  body.dark .back{color:var(--ink)}
+
+  main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px}
+  .view{display:none}.view.active{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .pad{padding:16px 18px 4px}
+  .row{display:flex;align-items:baseline;justify-content:space-between;margin:18px 18px 10px}
+  .h2{font-family:'Fraunces';font-size:20px;font-weight:600;margin:0}
+  .seeall{font-size:12.5px;color:var(--gold);font-weight:700;cursor:pointer;border:0;background:none;font-family:inherit}
+  .muted{color:var(--ink-soft);font-size:13px;margin:2px 0 0}
+
+  .hero{margin:14px 18px 0;border-radius:20px;overflow:hidden;position:relative;height:172px;box-shadow:var(--shadow)}
+  .slides{display:flex;height:100%;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+  .slide{min-width:100%;height:100%;padding:22px;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+  .slide:before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,rgba(0,0,0,.15),rgba(0,0,0,.55))}
+  .slide *{position:relative}
+  .slide .tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:800;opacity:.85;margin-bottom:6px}
+  .slide h3{font-family:'Fraunces';font-size:23px;margin:0 0 4px;line-height:1.1}
+  .slide p{font-size:13px;margin:0 0 12px;opacity:.92;max-width:78%}
+  .slide .cta{align-self:flex-start;background:rgba(255,255,255,.95);color:var(--ink);border:0;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer}
+  .dots{position:absolute;bottom:12px;right:16px;display:flex;gap:6px}
+  .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45);transition:.3s}
+  .dots i.on{background:#fff;width:18px;border-radius:4px}
+
+  .notifbar{margin:14px 18px 0;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm)}
+  .notifbar .nb-ic{flex:0 0 auto;color:var(--gold)}
+  .notifbar h4{margin:0 0 2px;font-family:'Fraunces';font-size:15px}.notifbar p{margin:0;font-size:12px;color:var(--ink-soft)}
+  .notifbar button{margin-left:auto;background:var(--gold);color:#fff;border:0;padding:9px 14px;border-radius:10px;font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer;white-space:nowrap}
+
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 18px 2px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 6px;text-align:center;cursor:pointer;box-shadow:var(--shadow-sm)}
+  .tile:active{transform:scale(.96)}
+  .tile .ic{width:40px;height:40px;border-radius:12px;margin:0 auto 7px;display:grid;place-items:center;background:var(--ink);color:var(--gold-2)}
+  .tile span{font-size:11px;font-weight:700;color:var(--ink-2)}
+
+  .hscroll{display:flex;gap:12px;overflow-x:auto;padding:4px 18px 6px}
+  .alertcard{flex:0 0 270px;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--alert);border-radius:14px;padding:14px;box-shadow:var(--shadow-sm)}
+  .alertcard.new{border-left-color:var(--pareve)}
+  .alertcard .lab{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--alert)}
+  .alertcard.new .lab{color:var(--pareve)}
+  .alertcard h4{font-family:'Fraunces';font-size:15.5px;margin:6px 0 4px;line-height:1.2}
+  .alertcard p{font-size:12.5px;color:var(--ink-soft);margin:0;line-height:1.45}
+  .alertcard .date{font-size:11px;color:var(--ink-soft);margin-top:9px;font-weight:600}
+
+  .pcard{flex:0 0 230px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer}
+  .photo{height:120px;position:relative;display:grid;place-items:center;overflow:hidden}
+  .photo img{width:100%;height:100%;object-fit:cover}.photo .mono{font-family:'Fraunces';font-size:40px;color:rgba(255,255,255,.9);font-weight:700}
+  .photo .pin{position:absolute;top:10px;left:10px;background:rgba(16,36,62,.85);color:#fff;font-size:10px;font-weight:700;padding:4px 9px;border-radius:8px}
+  .pcard .info{padding:12px 13px 14px}.pcard h4{font-family:'Fraunces';font-size:16px;margin:0 0 3px;line-height:1.15}
+  .pcard .sub{font-size:12px;color:var(--ink-soft);margin:0 0 9px}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .tg{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px}
+  .tg-cert{background:var(--ink);color:var(--cream)}body.dark .tg-cert{background:var(--gold);color:#0b1626}
+  .tg-meat{background:rgba(155,45,51,.14);color:var(--meat)}.tg-dairy{background:rgba(43,94,158,.14);color:var(--dairy)}
+  .tg-pareve{background:rgba(31,111,84,.14);color:var(--pareve)}.tg-dept{background:var(--gold-soft);color:#7a5a1c}
+  body.dark .tg-dept{color:var(--gold-2)}
+  .star{color:var(--gold);font-size:13px}
+
+  .sponsor{margin:14px 18px;border-radius:16px;padding:16px;background:linear-gradient(120deg,var(--ink),var(--ink-2));color:#fff;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow)}
+  .sponsor .s-ic{width:50px;height:50px;border-radius:14px;background:var(--gold);display:grid;place-items:center;flex:0 0 auto;font-family:'Fraunces';font-weight:700;font-size:24px}
+  .sponsor small{color:var(--gold-soft);font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
+  .sponsor h4{font-family:'Fraunces';margin:3px 0 2px;font-size:16px}.sponsor p{margin:0;font-size:12px;opacity:.85}
+
+  .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:4px;margin:14px 18px 6px;gap:4px}
+  .seg button{flex:1;border:0;background:none;padding:10px;border-radius:10px;font-weight:700;font-size:13px;color:var(--ink-soft);font-family:inherit;cursor:pointer}
+  .seg button.on{background:var(--ink);color:var(--cream)}body.dark .seg button.on{background:var(--gold);color:#0b1626}
+
+  .search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 18px;box-shadow:var(--shadow-sm)}
+  .search input{border:0;outline:0;flex:1;font-size:15px;font-family:inherit;background:transparent;color:var(--txt)}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:12px 18px 4px}
+  .chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink-soft);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .chip.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}body.dark .chip.active{background:var(--gold);color:#0b1626;border-color:var(--gold)}
+  .filters{display:flex;gap:8px;overflow-x:auto;padding:2px 18px 6px}
+  .fchip{flex:0 0 auto;border:1px dashed var(--gold);background:transparent;color:var(--gold);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer}
+  .fchip.active{background:var(--gold);color:#fff;border-style:solid}
+
+  .vlist{padding:8px 18px 22px;display:flex;flex-direction:column;gap:12px}
+  .lcard{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;display:flex;position:relative}
+  .lcard .lphoto{width:96px;flex:0 0 96px;display:grid;place-items:center;position:relative}
+  .lcard .lphoto img{width:100%;height:100%;object-fit:cover}.lcard .lphoto .mono{font-family:'Fraunces';font-size:30px;color:rgba(255,255,255,.92);font-weight:700}
+  .lcard .lbody{padding:12px 13px;flex:1;min-width:0}
+  .lcard h4{font-family:'Fraunces';font-size:15.5px;margin:0 0 3px;line-height:1.2}.lcard .sub{font-size:12px;color:var(--ink-soft);margin:0 0 8px}
+  .dist{font-size:11px;color:var(--gold);font-weight:700}
+  .fav{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.92);border:0;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;cursor:pointer;z-index:2}
+  .empty{text-align:center;color:var(--ink-soft);padding:38px 20px;font-size:14px}
+
+  .scanwrap{padding:16px 18px}
+  .camera{position:relative;width:100%;aspect-ratio:3/4;background:#0b1828;border-radius:18px;overflow:hidden;display:grid;place-items:center;border:1px solid var(--line)}
+  .camera video{width:100%;height:100%;object-fit:cover}
+  .reticle{position:absolute;inset:18% 12%;border:2px solid var(--gold);border-radius:14px;box-shadow:0 0 0 9999px rgba(11,24,40,.35)}
+  .scanline{position:absolute;left:12%;right:12%;height:2px;background:var(--gold);box-shadow:0 0 12px var(--gold);animation:scan 2.2s ease-in-out infinite}
+  @keyframes scan{0%,100%{top:20%}50%{top:78%}}
+  .torch{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;z-index:3}
+  .cam-msg{color:var(--cream);font-size:13.5px;text-align:center;padding:0 26px;line-height:1.5}
+  .btn{width:100%;background:var(--gold);color:#fff;border:0;padding:15px;border-radius:13px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;margin-top:14px}
+  .btn.dark{background:var(--ink)}body.dark .btn.dark{background:var(--gold);color:#0b1626}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  .manual{display:flex;gap:8px;margin-top:12px}
+  .manual input{flex:1;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:15px;font-family:inherit;background:var(--card);color:var(--txt)}
+  .manual button{background:var(--ink);color:#fff;border:0;border-radius:12px;padding:0 18px;font-weight:700;cursor:pointer}
+  .result{margin-top:16px;border-radius:16px;padding:16px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow-sm)}
+  .result.hit{border-left:5px solid var(--pareve)}.result.miss{border-left:5px solid var(--gold)}
+  .result h3{margin:0 0 4px;font-family:'Fraunces';font-size:18px}.result p{margin:2px 0;font-size:13.5px;color:var(--ink-soft)}
+
+  #map{width:100%;height:calc(100vh - 290px);min-height:300px}
+  .legend{display:flex;gap:14px;padding:10px 18px;font-size:12px;color:var(--ink-soft);flex-wrap:wrap}
+  .ldot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .leaflet-popup-content{font-family:'Plus Jakarta Sans';margin:12px 14px}
+  .pop b{font-family:'Fraunces';font-size:15px;display:block;margin-bottom:2px}.pop small{color:#5b6b7d}
+  .pop a{display:block;margin-top:9px;background:var(--ink);color:#fff;text-decoration:none;text-align:center;padding:9px;border-radius:10px;font-weight:700;font-size:13px}
+
+  .page{padding:8px 18px 26px}
+  .menu{display:flex;flex-direction:column;gap:10px;padding:14px 18px}
+  .mitem{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px;cursor:pointer;box-shadow:var(--shadow-sm)}
+  .mitem .mic{width:40px;height:40px;border-radius:11px;background:var(--bg2);display:grid;place-items:center;color:var(--txt);flex:0 0 auto}
+  .mitem h4{margin:0;font-size:15px;font-family:'Fraunces';font-weight:600}.mitem p{margin:2px 0 0;font-size:12px;color:var(--ink-soft)}
+  .mitem .arr{margin-left:auto;color:var(--ink-soft)}
+  .blogc{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow-sm)}
+  .blogc .bimg{height:130px}.blogc .bbody{padding:14px}
+  .blogc .btag{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--gold)}
+  .blogc h3{font-family:'Fraunces';font-size:18px;margin:6px 0 5px;line-height:1.2}.blogc p{font-size:13px;color:var(--ink-soft);margin:0}
+  .newsitem{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:11px;border-left:5px solid var(--alert)}
+  .newsitem.new{border-left-color:var(--pareve)}
+  .newsitem .lab{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--alert)}.newsitem.new .lab{color:var(--pareve)}
+  .newsitem h4{font-family:'Fraunces';margin:6px 0 4px;font-size:16px}.newsitem p{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.5}
+  .field{margin-bottom:13px}.field label{display:block;font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:5px}
+  .field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px;font-size:14px;font-family:inherit;background:var(--card);color:var(--txt)}
+  .field.check{display:flex;align-items:center;gap:9px}.field.check input{width:auto}
+  .admin-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .admin-tabs button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 13px;font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer;color:var(--ink-soft)}
+  .admin-tabs button.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+  .pinpad{max-width:240px;margin:30px auto;text-align:center}
+  .contact a{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px;text-decoration:none;color:var(--txt);margin-bottom:11px;box-shadow:var(--shadow-sm);font-weight:600}
+  .prof-head{text-align:center;padding:18px}
+  .avatar{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-2));display:grid;place-items:center;margin:0 auto 10px;font-family:'Fraunces';font-size:30px;color:#fff;font-weight:700}
+  .pointpill{display:inline-flex;gap:6px;align-items:center;background:var(--gold-soft);color:#7a5a1c;padding:5px 12px;border-radius:999px;font-weight:800;font-size:12px;margin-top:6px}
+  body.dark .pointpill{color:var(--gold-2)}
+  .toggle{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:10px}
+  .toggle span{font-weight:700;font-size:14px}
+  .sw{width:46px;height:26px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;transition:.2s;flex:0 0 auto}
+  .sw.on{background:var(--pareve)}.sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}.sw.on i{left:23px}
+  .langrow{display:flex;gap:8px;margin-bottom:10px}
+  .langrow button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:11px;padding:11px;font-weight:700;font-family:inherit;cursor:pointer;color:var(--txt)}
+  .langrow button.on{background:var(--ink);color:var(--cream)}body.dark .langrow button.on{background:var(--gold);color:#0b1626}
+
+  .sheet-bg{position:fixed;inset:0;background:rgba(16,36,62,.55);z-index:80;display:none;align-items:flex-end;justify-content:center}
+  .sheet-bg.show{display:flex}
+  .sheet{background:var(--bg2);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:8px 20px 26px;max-height:88vh;overflow-y:auto;animation:up .3s cubic-bezier(.2,.8,.2,1)}
+  @keyframes up{from{transform:translateY(100%)}to{transform:none}}
+  .grip{width:42px;height:4px;background:var(--line);border-radius:3px;margin:8px auto 14px}
+  .sheet .sheetimg{height:160px;border-radius:16px;margin-bottom:14px;display:grid;place-items:center;overflow:hidden}
+  .sheet .sheetimg img{width:100%;height:100%;object-fit:cover}
+  .sheet h2{font-family:'Fraunces';font-size:21px;margin:0 0 4px;line-height:1.2}
+  .kv{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .kv span:first-child{color:var(--ink-soft)}.kv span:last-child{font-weight:700;text-align:right}
+  .sheetbtns{display:flex;gap:8px;margin-top:16px}
+  .review{border-top:1px solid var(--line);padding:11px 0}.review .rh{display:flex;justify-content:space-between;font-size:13px}.review b{font-weight:700}.review p{margin:4px 0 0;font-size:13px;color:var(--ink-soft)}
+
+  nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg2);border-top:1px solid var(--line);display:flex;z-index:50;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+  nav button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-soft);font-size:10.5px;font-weight:700;font-family:inherit;cursor:pointer;padding:3px}
+  nav button.active{color:var(--gold)}
+  .scan-icon{width:48px;height:48px;border-radius:50%;background:var(--gold);display:grid;place-items:center;margin-top:-22px;box-shadow:0 6px 16px rgba(180,134,60,.45);border:3px solid var(--bg2)}
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;z-index:95;opacity:0;transition:.3s;pointer-events:none;max-width:90%;text-align:center}
+  .toast.show{opacity:1}
+
+  /* OVERLAYS */
+  .overlay{position:fixed;inset:0;z-index:100;background:var(--ink);color:var(--cream);display:none;flex-direction:column;max-width:480px;margin:0 auto}
+  .overlay.show{display:flex}
+  .ob-slides{flex:1;display:flex;overflow:hidden}
+  .ob-slide{min-width:100%;padding:60px 32px;display:flex;flex-direction:column;justify-content:center;text-align:center;transition:.4s}
+  .ob-ic{width:90px;height:90px;border-radius:26px;background:rgba(180,134,60,.18);border:1.5px solid var(--gold);display:grid;place-items:center;margin:0 auto 28px;color:var(--gold-2)}
+  .ob-slide h2{font-family:'Fraunces';font-size:28px;margin:0 0 12px}.ob-slide p{font-size:15px;color:var(--gold-soft);line-height:1.5;max-width:300px;margin:0 auto}
+  .ob-foot{padding:24px 32px 38px}
+  .ob-dots{display:flex;gap:7px;justify-content:center;margin-bottom:20px}
+  .ob-dots i{width:8px;height:8px;border-radius:50%;background:rgba(234,221,191,.3)}.ob-dots i.on{background:var(--gold);width:22px;border-radius:4px}
+  .auth{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 32px}
+  .auth .mark{width:60px;height:60px;font-size:34px;border-radius:18px;margin-bottom:20px}
+  .auth h2{font-family:'Fraunces';font-size:26px;margin:0 0 6px}.auth p{color:var(--gold-soft);font-size:14px;margin:0 0 30px}
+  .authbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:13px;padding:15px;font-weight:700;font-size:15px;font-family:inherit;cursor:pointer;margin-bottom:11px}
+  .authbtn.g{background:#fff;color:#1a1a1a}.authbtn.a{background:#000;color:#fff;border:1px solid #444}.authbtn.e{background:var(--gold);color:#fff}
+  .authbtn.guest{background:transparent;color:var(--gold-soft);border:1px solid rgba(234,221,191,.3)}
+  .auth small{display:block;text-align:center;color:var(--ink-soft);font-size:11px;margin-top:14px;line-height:1.5}
+  .prime{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:40px 32px}
+  .prime .ob-ic{margin-bottom:24px}
+  .prime h2{font-family:'Fraunces';font-size:25px;margin:0 0 12px}.prime p{color:var(--gold-soft);font-size:15px;line-height:1.5;margin:0 0 30px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <button class="back" id="backBtn">‹ <span data-i18n="back">Atrás</span></button>
+    <div class="brand" id="brandWrap"><div class="mark">כ</div>
+      <div><div class="htitle" id="hTitle">Kosher a Prueba</div><div class="hsub" id="hSub">Ciudad de México</div></div></div>
+    <div class="hbtns">
+      <button class="iconbtn" onclick="go('mas')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></button>
+      <button class="iconbtn" onclick="go('noticias')"><span class="dot-alert"></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- INICIO -->
+    <section id="v-inicio" class="view active">
+      <div class="hero"><div class="slides" id="slides"></div><div class="dots" id="dots"></div></div>
+      <div class="notifbar" id="notifBar">
+        <span class="nb-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg></span>
+        <div><h4 data-i18n="alerts_title">Alertas de kashrut</h4><p data-i18n="alerts_sub">Te avisamos si un producto pierde certificación.</p></div>
+        <button id="notifBtn" onclick="enableNotifs()" data-i18n="activate">Activar</button>
+      </div>
+      <div class="tiles">
+        <div class="tile" onclick="go('lugares');setSeg('rest')"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1 1 2 2 2s2-1 2-2V2M5 2v20M16 2v9h4V2M18 11v11"/></svg></div><span data-i18n="restaurants">Restaurantes</span></div>
+        <div class="tile" onclick="go('lugares');setSeg('store')"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18l-1 11H4L3 9zM3 9l2-5h14l2 5"/></svg></div><span data-i18n="stores">Tiendas</span></div>
+        <div class="tile" onclick="go('productos')"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg></div><span data-i18n="products">Productos</span></div>
+        <div class="tile" onclick="go('lugares');setSeg('map')"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/></svg></div><span data-i18n="map">Mapa</span></div>
+      </div>
+      <div class="row"><h2 class="h2" data-i18n="alerts_title">Alertas de kashrut</h2><button class="seeall" onclick="go('noticias')" data-i18n="seeall">Ver todo</button></div>
+      <div class="hscroll" id="homeAlerts"></div>
+      <div class="row"><h2 class="h2" data-i18n="featured">Restaurantes destacados</h2><button class="seeall" onclick="go('lugares');setSeg('rest')" data-i18n="seeall">Ver todo</button></div>
+      <div class="hscroll" id="homeRest"></div>
+      <div class="sponsor"><div class="s-ic">SLS</div><div><small data-i18n="sponsored">Patrocinado</small><h4>SLS Playa Mujeres Kosher</h4><p>All-inclusive · KOSHERAPRUEBA</p></div></div>
+      <div class="row"><h2 class="h2" data-i18n="from_blog">Del blog</h2><button class="seeall" onclick="go('blog')" data-i18n="seeall">Ver todo</button></div>
+      <div class="hscroll" id="homeBlog"></div><div style="height:8px"></div>
+    </section>
+
+    <!-- LUGARES -->
+    <section id="v-lugares" class="view">
+      <div class="seg" id="seg">
+        <button data-seg="rest" class="on" onclick="setSeg('rest')" data-i18n="restaurants">Restaurantes</button>
+        <button data-seg="store" onclick="setSeg('store')" data-i18n="stores">Tiendas</button>
+        <button data-seg="map" onclick="setSeg('map')" data-i18n="map">Mapa</button>
+      </div>
+      <div class="chips" style="padding-top:6px"><div class="chip" id="nearBtn" onclick="findNear()">📍 <span data-i18n="near">Cerca de mí</span></div></div>
+      <div id="seg-rest"><div class="chips" id="restFilters"></div><div class="vlist" id="restList"></div></div>
+      <div id="seg-store" style="display:none"><div class="chips" id="storeFilters"></div><div class="vlist" id="storeList"></div></div>
+      <div id="seg-map" style="display:none">
+        <div class="legend"><span><span class="ldot" style="background:#9B2D33"></span>Restaurantes</span><span><span class="ldot" style="background:#1F6F54"></span>Tiendas</span><span><span class="ldot" style="background:#2B5E9E"></span>Sinagogas</span></div>
+        <div id="map"></div>
+      </div>
+    </section>
+
+    <!-- PRODUCTOS -->
+    <section id="v-productos" class="view">
+      <div class="pad"><p class="muted" data-i18n="prod_sub">Busca por nombre, marca o código. Filtra por estándar.</p></div>
+      <div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#536982" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="q" placeholder="Ej. Sabritas, salsa, agua…"></div>
+      <div class="chips" id="cats"></div><div class="filters" id="pfilters"></div><div class="vlist" id="prodList"></div>
+    </section>
+
+    <!-- ESCÁNER -->
+    <section id="v-scan" class="view"><div class="scanwrap">
+      <p class="muted" data-i18n="scan_sub">Apunta al código de barras del producto.</p>
+      <div class="camera" id="camBox"><div class="cam-msg" id="camMsg" data-i18n="cam_idle">Toca “Activar cámara” para empezar.</div></div>
+      <button class="btn" id="camStart" data-i18n="cam_start">Activar cámara</button>
+      <div class="manual"><input id="manualCode" inputmode="numeric" placeholder="O ingresa el código manual"><button id="manualGo" data-i18n="search">Buscar</button></div>
+      <div id="scanResult"></div>
+    </div></section>
+
+    <!-- MÁS -->
+    <section id="v-mas" class="view"><div class="menu" id="masMenu"></div></section>
+
+    <!-- PERFIL -->
+    <section id="v-perfil" class="view"><div class="page" id="profPage"></div></section>
+    <section id="v-favoritos" class="view"><div class="page" id="favPage"></div></section>
+    <section id="v-ajustes" class="view"><div class="page" id="setPage"></div></section>
+    <section id="v-legal" class="view"><div class="page" id="legalPage"></div></section>
+    <section id="v-noticias" class="view"><div class="page" id="newsPage"></div></section>
+    <section id="v-blog" class="view"><div class="page" id="blogPage"></div></section>
+    <section id="v-contacto" class="view"><div class="page contact" id="contactPage"></div></section>
+    <section id="v-admin" class="view"><div class="page" id="adminPage"></div></section>
+  </main>
+
+  <nav>
+    <button data-v="inicio" class="active" onclick="go('inicio')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span data-i18n="home">Inicio</span></button>
+    <button data-v="lugares" onclick="go('lugares')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span data-i18n="places">Lugares</span></button>
+    <button data-v="scan" onclick="go('scan')"><span class="scan-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M11 8v8M15 8v8"/></svg></span><span data-i18n="scan">Escáner</span></button>
+    <button data-v="productos" onclick="go('productos')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg><span data-i18n="products">Productos</span></button>
+    <button data-v="mas" onclick="go('mas')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span data-i18n="more">Más</span></button>
+  </nav>
+</div>
+
+<!-- OVERLAYS -->
+<div class="overlay" id="onboarding">
+  <div class="ob-slides" id="obSlides"></div>
+  <div class="ob-foot"><div class="ob-dots" id="obDots"></div><button class="btn" id="obNext" onclick="obStep()">Siguiente</button></div>
+</div>
+<div class="overlay" id="authScreen">
+  <div class="auth">
+    <div class="mark">כ</div><h2>Bienvenido</h2><p>Crea tu cuenta o entra para guardar y aportar.</p>
+    <button class="authbtn g" onclick="login('Google')"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22 12c0-.7-.1-1.4-.2-2H12v4h5.6c-.2 1.3-1 2.4-2 3.1v2.6h3.3C20.8 18 22 15.3 22 12z"/><path fill="#34A853" d="M12 22c2.7 0 5-..9 6.6-2.4l-3.3-2.6c-.9.6-2 1-3.3 1-2.5 0-4.7-1.7-5.4-4H3.2v2.6C4.8 19.8 8.1 22 12 22z"/><path fill="#FBBC05" d="M6.6 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.2C2.4 8.8 2 10.3 2 12s.4 3.2 1.2 4.6L6.6 14z"/><path fill="#EA4335" d="M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9C16.9 2.9 14.7 2 12 2 8.1 2 4.8 4.2 3.2 7.4L6.6 10c.7-2.3 2.9-4 5.4-4z"/></svg> Continuar con Google</button>
+    <button class="authbtn a" onclick="login('Apple')"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M16 1c0 1.5-.6 2.8-1.5 3.7-1 1-2.4 1.8-3.7 1.7-.2-1.4.5-2.9 1.4-3.8C13.1 1.6 14.7.9 16 1zM20.5 17c-.6 1.4-1.3 2.7-2.3 3.9-.9 1-1.9 2.1-3.3 2.1s-1.8-.8-3.3-.8-2 .8-3.3.8-2.4-1.2-3.3-2.2C2.4 18.4 1.5 14 3.2 11c.8-1.5 2.3-2.5 4-2.5 1.4 0 2.5.9 3.3.9.8 0 2.2-1 3.7-.9.6 0 2.4.3 3.5 2-..1.1-2.1 1.2-2 3.6 0 2.8 2.5 3.7 2.8 3.8z"/></svg> Continuar con Apple</button>
+    <button class="authbtn e" onclick="login('Correo')">Continuar con correo</button>
+    <button class="authbtn guest" onclick="loginGuest()">Entrar como invitado</button>
+    <small>Demo: el login aún no se conecta de verdad a Google/Apple. Eso se activa con el backend (Supabase) en el siguiente paso.</small>
+  </div>
+</div>
+<div class="overlay" id="notifPrime">
+  <div class="prime">
+    <div class="ob-ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+    <h2>Activa las alertas de kashrut</h2><p>Te avisamos al instante si un producto pierde su certificación. Es la función más importante de la app.</p>
+    <button class="btn" onclick="enableNotifs(true)">Activar notificaciones</button>
+    <button class="btn ghost" style="background:transparent;color:var(--gold-soft);border:1px solid rgba(234,221,191,.3)" onclick="closeOverlay('notifPrime')">Ahora no</button>
+  </div>
+</div>
+
+<div class="sheet-bg" id="sheetBg" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ===== i18n ===== */
+const I18N={
+ es:{back:"Atrás",home:"Inicio",places:"Lugares",scan:"Escáner",products:"Productos",more:"Más",restaurants:"Restaurantes",stores:"Tiendas",map:"Mapa",seeall:"Ver todo",featured:"Restaurantes destacados",from_blog:"Del blog",sponsored:"Patrocinado",alerts_title:"Alertas de kashrut",alerts_sub:"Te avisamos si un producto pierde certificación.",activate:"Activar",near:"Cerca de mí",prod_sub:"Busca por nombre, marca o código. Filtra por estándar.",scan_sub:"Apunta al código de barras del producto.",cam_idle:"Toca “Activar cámara” para empezar.",cam_start:"Activar cámara",search:"Buscar"},
+ en:{back:"Back",home:"Home",places:"Places",scan:"Scan",products:"Products",more:"More",restaurants:"Restaurants",stores:"Stores",map:"Map",seeall:"See all",featured:"Featured restaurants",from_blog:"From the blog",sponsored:"Sponsored",alerts_title:"Kashrut alerts",alerts_sub:"We'll warn you if a product loses certification.",activate:"Enable",near:"Near me",prod_sub:"Search by name, brand or code. Filter by standard.",scan_sub:"Point at the product barcode.",cam_idle:"Tap “Enable camera” to start.",cam_start:"Enable camera",search:"Search"},
+ he:{back:"חזרה",home:"בית",places:"מקומות",scan:"סריקה",products:"מוצרים",more:"עוד",restaurants:"מסעדות",stores:"חנויות",map:"מפה",seeall:"הצג הכל",featured:"מסעדות מומלצות",from_blog:"מהבלוג",sponsored:"בחסות",alerts_title:"התראות כשרות",alerts_sub:"נודיע לך אם מוצר מאבד תעודה.",activate:"הפעל",near:"קרוב אליי",prod_sub:"חיפוש לפי שם, מותג או קוד.",scan_sub:"כוון אל הברקוד של המוצר.",cam_idle:"הקש “הפעל מצלמה” כדי להתחיל.",cam_start:"הפעל מצלמה",search:"חיפוש"}
+};
+let lang='es';
+function t(k){return (I18N[lang]&&I18N[lang][k])||I18N.es[k]||k;}
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(e=>e.textContent=t(e.dataset.i18n));
+  document.documentElement.dir = lang==='he'?'rtl':'ltr';
+  renderHome();renderMasMenu();
+}
+
+/* ===== DATA ===== */
+const GRAD=['linear-gradient(135deg,#1C3A5E,#10243E)','linear-gradient(135deg,#9B2D33,#6e1f24)','linear-gradient(135deg,#1F6F54,#14503c)','linear-gradient(135deg,#2B5E9E,#1d4275)','linear-gradient(135deg,#B4863C,#8a6526)'];
+const grad=i=>GRAD[((i%GRAD.length)+GRAD.length)%GRAD.length];
+let PRODUCTS=[
+  {id:1,name:"Agua Sta. María 500 ml",brand:"Sta. María · Nestlé",cat:"Agua y bebidas",status:"Pareve",pesaj:true,cert:"Kosher Alef",code:"7501059200050",img:null},
+  {id:2,name:"Sabritas Receta Crujiente Sal 160 g",brand:"Sabritas",cat:"Botanas y snacks",status:"Pareve",pesaj:false,cert:"KMD México",code:"7501011143241",img:null},
+  {id:3,name:"La Anita Kut-Balam · Habanero tatemado",brand:"La Anita",cat:"Salsas y condimentos",status:"Pareve",pesaj:false,cert:"KMD México",code:"011848123196",img:null},
+  {id:4,name:"McCormick Sazonador a la Italiana 116 g",brand:"McCormick Gourmet",cat:"Especias y sazonadores",status:"Pareve",pesaj:false,cert:"OU",code:"052100015477",img:null},
+];
+let PLACES=[
+  {id:1,type:"rest",name:"Sakin Kosher",cuisine:"Cortes argentinos",kosher:"Carne",cert:"One Kosher",lat:19.4272,lng:-99.1968,url:"https://maps.app.goo.gl/zjGLcLUrTPehswez8?g_st=ac",img:null,reviews:[{u:"David",s:5,t:"Excelente carne, servicio rápido."}]},
+  {id:2,type:"rest",name:"Gaucho Grill",cuisine:"Parrilla",kosher:"Carne",cert:"KMD México",lat:19.4305,lng:-99.2028,url:"https://maps.app.goo.gl/55rPY7qHPrNkfcsw6?g_st=ac",img:null,reviews:[]},
+  {id:3,type:"rest",name:"Pecorino Kosher",cuisine:"Italiano",kosher:"Lácteo",cert:"Kosher Alef",lat:19.4351,lng:-99.2052,url:"https://maps.app.goo.gl/PrXeZysf7AQCw8Cy9?g_st=ac",img:null,reviews:[{u:"Sara",s:4,t:"Muy buena pasta."}]},
+  {id:4,type:"store",name:"Beth Yosef by Kurson",depts:["Carnicería","Abarrotes","Lácteos","Panadería"],lat:19.4178,lng:-99.2438,url:"https://maps.app.goo.gl/acvoMxM9LgdSrLaH9?g_st=ac",img:null,reviews:[]},
+  {id:5,type:"store",name:"Super Emet Polanco",depts:["Abarrotes","Lácteos","Vinos"],lat:19.4344,lng:-99.1992,url:"https://maps.app.goo.gl/w7rRJwLoS99FMiPT8?g_st=ac",img:null,reviews:[]},
+  {id:6,type:"syn",name:"Maguen David (Polanco)",cuisine:"Sefaradí",lat:19.4330,lng:-99.2012,url:"https://maps.app.goo.gl/7jEM6HRmScMD6gDr9?g_st=ac",reviews:[]},
+  {id:7,type:"syn",name:"Ramat Shalom",cuisine:"Ashkenazí",lat:19.4116,lng:-99.2479,url:"https://maps.app.goo.gl/XfwawEHToLmcRRse7?g_st=ac",reviews:[]},
+  {id:8,type:"syn",name:"Bet Sara · Jabad Lubavitch",cuisine:"Chabad",lat:19.4288,lng:-99.2082,url:"https://maps.app.goo.gl/DxFNnbRj8Q97GTdV8?g_st=ac",reviews:[]},
+];
+let NEWS=[
+  {type:"alert",title:"Marca de quesos pierde certificación KMD",body:"Deja de contar con supervisión este mes. Revisa el lote.",date:"Hoy"},
+  {type:"alert",title:"Galletas importadas: sello vencido",body:"La certificación caducó y no fue renovada.",date:"Hace 2 días"},
+  {type:"new",title:"Nueva línea de botanas certificadas KMD",body:"Tres presentaciones con sello Pareve.",date:"Hace 4 días"},
+];
+let BLOG=[
+  {tag:"Guía",title:"¿Qué significa Pareve, Lácteo y Carne?",excerpt:"La clave para leer cualquier empaque en 30 segundos."},
+  {tag:"Kashrut",title:"Por qué un sello puede desaparecer",excerpt:"Cuándo se retira una certificación y qué hacer."},
+  {tag:"Pésaj",title:"Cómo armar tu despensa Le-Pésaj",excerpt:"Productos aptos y errores comunes."},
+];
+const BANNERS=[
+  {tag:"Destacado",title:"Encuentra lo kosher cerca de ti",sub:"Restaurantes, tiendas y sinagogas en un lugar.",cta:"Explorar",go:"lugares",bg:grad(0)},
+  {tag:"Patrocinado",title:"SLS Playa Mujeres Kosher",sub:"All-inclusive · código KOSHERAPRUEBA.",cta:"Ver más",go:"inicio",bg:grad(4)},
+  {tag:"Nuevo",title:"Escanea y verifica al instante",sub:"Apunta al código y conoce su estándar.",cta:"Escanear",go:"scan",bg:grad(2)},
+];
+
+/* ===== STATE ===== */
+let user=null,theme='light',notifGranted=false,userPos=null,moderation=[];
+let activeCat="Todos",pFilters=new Set(),restFilter="Todos",storeFilter="Todos";
+const CATS=["Todos","Lácteos","Carnes y salchichonería","Botanas y snacks","Salsas y condimentos","Especias y sazonadores","Agua y bebidas","Panadería y repostería","Dulces y chocolates","Abarrotes","Congelados"];
+const PFILTERS=["Pareve","Lácteo","Carne","LePésaj","Kosher Alef","KMD México","One Kosher","OU"];
+const COLORS={rest:"#9B2D33",store:"#1F6F54",syn:"#2B5E9E"};
+const TITLES={inicio:["Kosher a Prueba","Ciudad de México"],lugares:["Lugares",""],scan:["Escáner",""],productos:["Productos",""],mas:["Más",""],perfil:["Mi perfil",""],favoritos:["Favoritos",""],ajustes:["Ajustes",""],legal:["Legal y privacidad",""],noticias:["Noticias y alertas",""],blog:["Blog",""],contacto:["Contacto",""],admin:["Administrador",""]};
+const SUB=["perfil","favoritos","ajustes","legal","noticias","blog","contacto","admin"];
+
+/* ===== HELPERS ===== */
+const norm=c=>(c||"").replace(/\D/g,"").replace(/^0+/,"");
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);}
+function statusTag(s){return s==="Lácteo"?'<span class="tg tg-dairy">Lácteo</span>':s==="Carne"?'<span class="tg tg-meat">Carne</span>':'<span class="tg tg-pareve">Pareve</span>';}
+function avgStars(r){if(!r||!r.length)return 0;return Math.round(r.reduce((a,b)=>a+b.s,0)/r.length);}
+function stars(n){return '★★★★★'.slice(0,n)+'☆☆☆☆☆'.slice(0,5-n);}
+function isFav(kind,id){return user&&user.favs.has(kind+id);}
+function toggleFav(kind,id,ev){if(ev)ev.stopPropagation();if(!user||user.guest){toast('Inicia sesión para guardar favoritos');return;}
+  const k=kind+id;user.favs.has(k)?user.favs.delete(k):(user.favs.add(k),user.points+=5);renderRest();renderStore();renderProducts();toast(user.favs.has(k)?'Guardado ✓':'Quitado');}
+function distKm(a,b){const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;
+  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+
+/* ===== ROUTER ===== */
+function go(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
+  const ti=TITLES[id]||["Kosher a Prueba",""];
+  document.getElementById('hTitle').textContent=ti[0];const sub=document.getElementById('hSub');sub.textContent=ti[1];sub.style.display=ti[1]?'block':'none';
+  const isSub=SUB.includes(id);
+  document.getElementById('backBtn').style.display=isSub?'flex':'none';
+  document.getElementById('brandWrap').style.display=isSub?'none':'flex';
+  if(id!=='scan'&&stream)stopCamera();
+  if(id==='admin')renderAdmin();if(id==='noticias')renderNews();if(id==='blog')renderBlog();
+  if(id==='perfil')renderProfile();if(id==='favoritos')renderFavs();if(id==='ajustes')renderSettings();if(id==='legal')renderLegal();if(id==='contacto')renderContact();
+  document.getElementById('main').scrollTop=0;
+}
+document.getElementById('backBtn').onclick=()=>go('mas');
+
+/* ===== ONBOARDING / AUTH ===== */
+const OB=[
+  {ic:'<path d="M12 2 4 7v10l8 5 8-5V7z"/>',h:"Bienvenido a Kosher a Prueba",p:"La guía kosher definitiva de México: productos, lugares y alertas."},
+  {ic:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M11 8v8M15 8v8"/>',h:"Escanea y verifica",p:"Apunta a cualquier código de barras y conoce su estándar al instante."},
+  {ic:'<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',h:"Encuentra todo cerca",p:"Restaurantes, tiendas y sinagogas kosher en el mapa."},
+];
+let obI=0;
+function renderOb(){
+  document.getElementById('obSlides').innerHTML=OB.map(s=>`<div class="ob-slide"><div class="ob-ic"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${s.ic}</svg></div><h2>${s.h}</h2><p>${s.p}</p></div>`).join('');
+  document.getElementById('obDots').innerHTML=OB.map((_,i)=>`<i class="${i===0?'on':''}"></i>`).join('');
+}
+function obStep(){
+  obI++;
+  if(obI>=OB.length){closeOverlay('onboarding');openOverlay('authScreen');return;}
+  document.querySelectorAll('#obSlides .ob-slide').forEach(s=>s.style.transform=`translateX(-${obI*100}%)`);
+  document.querySelectorAll('#obDots i').forEach((d,i)=>d.classList.toggle('on',i===obI));
+  document.getElementById('obNext').textContent=obI===OB.length-1?'Empezar':'Siguiente';
+}
+function openOverlay(id){document.getElementById(id).classList.add('show');}
+function closeOverlay(id){document.getElementById(id).classList.remove('show');}
+function login(method){user={name:method==='Apple'?'Usuario Apple':method==='Google'?'Usuario Google':'Mi cuenta',method,guest:false,favs:new Set(),history:[],points:20,prefs:{stream:'Sefaradí',level:'Glatt',city:'CDMX'}};
+  closeOverlay('authScreen');openOverlay('notifPrime');afterAuth();toast('Sesión iniciada con '+method);}
+function loginGuest(){user={name:'Invitado',method:'guest',guest:true,favs:new Set(),history:[],points:0,prefs:{stream:'—',level:'—',city:'CDMX'}};
+  closeOverlay('authScreen');openOverlay('notifPrime');afterAuth();}
+function afterAuth(){renderHome();renderRest();renderStore();renderMasMenu();initMap(true);}
+
+/* ===== NOTIFICATIONS (real Web API) ===== */
+async function enableNotifs(fromPrime){
+  try{
+    if(!('Notification' in window))throw 0;
+    const perm=await Notification.requestPermission();
+    if(perm==='granted'){notifGranted=true;document.getElementById('notifBtn').textContent='Activado ✓';
+      toast('Alertas activadas');setTimeout(()=>fireSampleAlert(),900);}
+    else toast('Permiso denegado — actívalo en ajustes del navegador');
+  }catch(e){notifGranted=true;toast('Alertas activadas (demo)');document.getElementById('notifBtn').textContent='Activado ✓';}
+  if(fromPrime)closeOverlay('notifPrime');
+}
+function fireSampleAlert(){
+  try{if(notifGranted&&'Notification' in window&&Notification.permission==='granted'){
+    new Notification('⚠️ Alerta de kashrut',{body:'Una marca de quesos perdió su certificación KMD. Toca para ver.'});return;}}catch(e){}
+  toast('🔔 Alerta de kashrut: una marca perdió su certificación');
+}
+
+/* ===== GEOLOCATION ===== */
+function findNear(){
+  document.getElementById('nearBtn').textContent='📍 Buscando…';
+  const done=pos=>{userPos=pos;document.getElementById('nearBtn').innerHTML='📍 '+t('near')+' ✓';renderRest();renderStore();toast('Ordenado por cercanía');if(map)addUserMarker();};
+  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(
+    p=>done({lat:p.coords.latitude,lng:p.coords.longitude}),
+    ()=>{done({lat:19.4326,lng:-99.2010});toast('Sin permiso de ubicación — usando centro de CDMX');},{timeout:6000});
+  }else{done({lat:19.4326,lng:-99.2010});}
+}
+
+/* ===== INICIO ===== */
+function renderHome(){
+  const sl=document.getElementById('slides');if(!sl)return;
+  sl.innerHTML=BANNERS.map(b=>`<div class="slide" style="background:${b.bg}"><div><div class="tag">${b.tag}</div><h3>${b.title}</h3><p>${b.sub}</p><button class="cta" onclick="go('${b.go}')">${b.cta}</button></div></div>`).join('');
+  document.getElementById('dots').innerHTML=BANNERS.map((_,i)=>`<i class="${i===0?'on':''}"></i>`).join('');
+  document.getElementById('homeAlerts').innerHTML=NEWS.slice(0,3).map(n=>`<div class="alertcard ${n.type==='new'?'new':''}"><div class="lab">${n.type==='new'?'Nuevo producto':'Certificación retirada'}</div><h4>${n.title}</h4><p>${n.body}</p><div class="date">${n.date}</div></div>`).join('');
+  document.getElementById('homeRest').innerHTML=PLACES.filter(p=>p.type==='rest').map((p,i)=>`<div class="pcard" onclick="openPlace(${p.id})"><div class="photo" style="background:${grad(i)}">${p.img?`<img src="${p.img}">`:`<div class="mono">${p.name[0]}</div>`}<div class="pin">${p.cert}</div></div><div class="info"><h4>${p.name}</h4><p class="sub">${p.cuisine}</p><div class="tags">${statusTag(p.kosher)}</div></div></div>`).join('');
+  document.getElementById('homeBlog').innerHTML=BLOG.map((b,i)=>`<div class="pcard" onclick="go('blog')"><div class="photo" style="background:${grad(i+1)}"><div class="mono">✦</div></div><div class="info"><div style="color:var(--gold);font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase">${b.tag}</div><h4 style="margin-top:5px">${b.title}</h4></div></div>`).join('');
+}
+let slideI=0;setInterval(()=>{const s=document.getElementById('slides');if(!s||!s.children.length)return;slideI=(slideI+1)%BANNERS.length;s.style.transform=`translateX(-${slideI*100}%)`;document.querySelectorAll('#dots i').forEach((d,i)=>d.classList.toggle('on',i===slideI));},4500);
+
+/* ===== LUGARES ===== */
+function setSeg(seg){document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.seg===seg));
+  document.getElementById('seg-rest').style.display=seg==='rest'?'block':'none';
+  document.getElementById('seg-store').style.display=seg==='store'?'block':'none';
+  document.getElementById('seg-map').style.display=seg==='map'?'block':'none';
+  if(seg==='map')setTimeout(()=>initMap(),80);}
+function withDist(list){if(!userPos)return list;return list.map(p=>({...p,_d:distKm(userPos,p)})).sort((a,b)=>a._d-b._d);}
+function renderRest(){
+  const opts=["Todos","Carne","Lácteo","Pareve"];
+  const ff=document.getElementById('restFilters');if(ff)ff.innerHTML=opts.map(o=>`<div class="chip ${o===restFilter?'active':''}" onclick="restFilter='${o}';renderRest()">${o}</div>`).join('');
+  let rows=PLACES.filter(p=>p.type==='rest'&&(restFilter==='Todos'||p.kosher===restFilter));rows=withDist(rows);
+  const el=document.getElementById('restList');if(!el)return;
+  el.innerHTML=rows.length?rows.map((p,i)=>card(p,i,'rest')).join(''):`<div class="empty">Sin restaurantes con ese filtro.</div>`;
+}
+function renderStore(){
+  const opts=["Todos","Carnicería","Abarrotes","Lácteos","Panadería","Vinos"];
+  const ff=document.getElementById('storeFilters');if(ff)ff.innerHTML=opts.map(o=>`<div class="chip ${o===storeFilter?'active':''}" onclick="storeFilter='${o}';renderStore()">${o}</div>`).join('');
+  let rows=PLACES.filter(p=>p.type==='store'&&(storeFilter==='Todos'||(p.depts||[]).includes(storeFilter)));rows=withDist(rows);
+  const el=document.getElementById('storeList');if(!el)return;
+  el.innerHTML=rows.length?rows.map((p,i)=>card(p,i+2,'store')).join(''):`<div class="empty">Sin tiendas con ese departamento.</div>`;
+}
+function card(p,i,kind){
+  const sub=kind==='rest'?p.cuisine:'Tienda multi-abarrotes';
+  const tags=kind==='rest'?`<span class="tg tg-cert">${p.cert}</span>${statusTag(p.kosher)}`:(p.depts||[]).map(d=>`<span class="tg tg-dept">${d}</span>`).join('');
+  const d=p._d!=null?`<div class="dist">a ${p._d<1?Math.round(p._d*1000)+' m':p._d.toFixed(1)+' km'}</div>`:'';
+  return `<div class="lcard" onclick="openPlace(${p.id})">
+    <button class="fav" onclick="toggleFav('${kind}',${p.id},event)">${isFav(kind,p.id)?'❤️':'🤍'}</button>
+    <div class="lphoto" style="background:${grad(i)}">${p.img?`<img src="${p.img}">`:`<div class="mono">${p.name[0]}</div>`}</div>
+    <div class="lbody"><h4>${p.name}</h4><p class="sub">${sub}</p><div class="tags">${tags}</div>${d}</div></div>`;
+}
+function openPlace(id){
+  const p=PLACES.find(x=>x.id===id);
+  const meta=p.type==='rest'?`${p.cuisine} · ${p.kosher}`:p.type==='store'?'Tienda multi-abarrotes':`Sinagoga · ${p.cuisine}`;
+  const avg=avgStars(p.reviews);
+  document.getElementById('sheet').innerHTML=`<div class="grip"></div>
+    <div class="sheetimg" style="background:${grad(id)}">${p.img?`<img src="${p.img}">`:`<div class="mono" style="font-family:Fraunces;font-size:46px;color:rgba(255,255,255,.9)">${p.name[0]}</div>`}</div>
+    <h2>${p.name}</h2><p class="muted">${meta} ${avg?`· <span class="star">${stars(avg)}</span>`:''}</p>
+    ${p.cert?`<div class="kv"><span>Certificadora</span><span>${p.cert}</span></div>`:''}
+    ${p.depts?`<div class="kv"><span>Departamentos</span><span>${p.depts.join(', ')}</span></div>`:''}
+    <div class="sheetbtns"><a class="btn dark" style="text-align:center;text-decoration:none" href="${p.url}" target="_blank">Cómo llegar →</a>
+    <button class="btn ghost" style="margin-top:0;flex:0 0 54px" onclick="share('${p.name}','${p.url}')">⤴</button></div>
+    <div style="margin-top:18px"><b style="font-family:Fraunces;font-size:16px">Reseñas</b>
+    ${(p.reviews||[]).map(r=>`<div class="review"><div class="rh"><b>${r.u}</b><span class="star">${stars(r.s)}</span></div><p>${r.t}</p></div>`).join('')||'<p class="muted">Aún no hay reseñas.</p>'}
+    <button class="btn ghost" onclick="addReview(${id})">Escribir reseña</button></div>`;
+  document.getElementById('sheetBg').classList.add('show');
+}
+function addReview(id){if(!user||user.guest)return toast('Inicia sesión para reseñar');
+  const txt=prompt('Tu reseña (1-5 estrellas + comentario). Ej: 5 Excelente');if(!txt)return;
+  const s=Math.max(1,Math.min(5,parseInt(txt)||5));const p=PLACES.find(x=>x.id===id);
+  p.reviews.push({u:user.name,s,t:txt.replace(/^\d+\s*/,'')});user.points+=10;openPlace(id);toast('¡Gracias por tu reseña! +10 pts');}
+function closeSheet(){document.getElementById('sheetBg').classList.remove('show');}
+async function share(title,url){try{if(navigator.share){await navigator.share({title:'Kosher a Prueba · '+title,url});}else throw 0;}catch(e){toast('Enlace copiado (demo)');}}
+
+/* ===== PRODUCTOS ===== */
+function renderPChips(){
+  document.getElementById('cats').innerHTML=CATS.map(c=>`<div class="chip ${c===activeCat?'active':''}" onclick="activeCat='${c}';renderPChips();renderProducts()">${c}</div>`).join('');
+  document.getElementById('pfilters').innerHTML=PFILTERS.map(f=>`<div class="fchip ${pFilters.has(f)?'active':''}" onclick="toggleP('${f}')">${f}</div>`).join('');
+}
+function toggleP(f){pFilters.has(f)?pFilters.delete(f):pFilters.add(f);renderPChips();renderProducts();}
+function matchP(p){for(const f of pFilters){if(f==="LePésaj"){if(!p.pesaj)return false;}else if(["Pareve","Lácteo","Carne"].includes(f)){if(p.status!==f)return false;}else{if(!p.cert.includes(f))return false;}}return true;}
+function renderProducts(){
+  const qel=document.getElementById('q');const q=(qel?qel.value:"").toLowerCase();
+  const rows=PRODUCTS.filter(p=>(activeCat==="Todos"||p.cat===activeCat)&&matchP(p)&&(q===""||(p.name+p.brand+p.cat+p.code).toLowerCase().includes(q)));
+  const el=document.getElementById('prodList');if(!el)return;
+  el.innerHTML=rows.length?rows.map((p,i)=>`<div class="lcard" onclick="openProduct(${p.id})">
+    <button class="fav" onclick="toggleFav('prod',${p.id},event)">${isFav('prod',p.id)?'❤️':'🤍'}</button>
+    <div class="lphoto" style="flex:0 0 80px;width:80px;background:${grad(i)}">${p.img?`<img src="${p.img}">`:`<div class="mono" style="font-size:24px">${p.brand[0]}</div>`}</div>
+    <div class="lbody"><h4 style="font-size:14.5px">${p.name}</h4><p class="sub">${p.brand}</p><div class="tags"><span class="tg tg-cert">${p.cert}</span>${statusTag(p.status)}${p.pesaj?'<span class="tg tg-dept">Le-Pésaj</span>':''}</div></div></div>`).join('')
+    :`<div class="empty">Sin resultados.<br>Escanéalo para enviarlo a revisión rabínica.</div>`;
+}
+function openProduct(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  document.getElementById('sheet').innerHTML=`<div class="grip"></div>
+    <div class="sheetimg" style="background:${grad(id)}">${p.img?`<img src="${p.img}">`:`<div class="mono" style="font-family:Fraunces;font-size:46px;color:rgba(255,255,255,.9)">${p.brand[0]}</div>`}</div>
+    <h2>${p.name}</h2><p class="muted">${p.brand}</p>
+    <div class="tags" style="margin:8px 0"><span class="tg tg-cert">${p.cert}</span>${statusTag(p.status)}${p.pesaj?'<span class="tg tg-dept">Le-Pésaj</span>':''}</div>
+    <div class="kv"><span>Categoría</span><span>${p.cat}</span></div>
+    <div class="kv"><span>Estándar</span><span>${p.status}${p.pesaj?' · apto Pésaj':''}</span></div>
+    <div class="kv"><span>Certificadora</span><span>${p.cert}</span></div>
+    <div class="kv"><span>Código</span><span>${p.code}</span></div>
+    <div class="sheetbtns"><button class="btn dark" onclick="toggleFav('prod',${p.id})">${isFav('prod',p.id)?'❤️ Guardado':'🤍 Guardar'}</button>
+    <button class="btn ghost" style="flex:0 0 54px" onclick="share('${p.name}','https://kosheraprueba.mx')">⤴</button></div>
+    <button class="btn ghost" onclick="toast('Reporte enviado a revisión. ¡Gracias!')">Reportar error o cambio de empaque</button>`;
+  document.getElementById('sheetBg').classList.add('show');
+}
+
+/* ===== SCANNER ===== */
+let stream=null,scanning=false,zx=null,torchTrack=null,torchOn=false;
+function lookup(code){
+  if(user)user.history.unshift({code,when:'ahora'});
+  const tg=norm(code),p=PRODUCTS.find(x=>norm(x.code)===tg),box=document.getElementById('scanResult');
+  if(p){box.innerHTML=`<div class="result hit"><h3>✓ ${p.name}</h3><p><b style="color:var(--txt)">${p.cert}</b> · ${p.status}${p.pesaj?' · apto Pésaj':''}</p><p>Código ${code}</p><button class="btn dark" onclick="openProduct(${p.id})">Ver ficha completa</button></div>`;if(navigator.vibrate)navigator.vibrate(60);}
+  else{box.innerHTML=`<div class="result miss"><h3>Sin registro</h3><p>El código <b style="color:var(--txt)">${code}</b> no está en la base todavía.</p><button class="btn" onclick="submitMod('${code}')">Subir fotos y enviar a revisión</button></div>`;}
+}
+function submitMod(code){moderation.unshift({id:Date.now(),code,status:'pendiente'});if(user)user.points+=15;toast('Enviado a revisión rabínica. +15 pts');}
+document.getElementById('manualGo').onclick=()=>{const v=document.getElementById('manualCode').value.trim();if(v)lookup(v);};
+document.getElementById('manualCode').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('manualGo').click();});
+async function startCamera(){
+  const box=document.getElementById('camBox');
+  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});
+    box.innerHTML=`<video id="vid" autoplay muted playsinline></video><div class="reticle"></div><div class="scanline"></div><button class="torch" onclick="toggleTorch()">🔦 Linterna</button>`;
+    const vid=document.getElementById('vid');vid.srcObject=stream;await vid.play();
+    torchTrack=stream.getVideoTracks()[0];
+    document.getElementById('camStart').textContent='Detener cámara';scanning=true;
+    if('BarcodeDetector' in window){const d=new BarcodeDetector({formats:['ean_13','upc_a','ean_8','upc_e','code_128','qr_code']});loopNative(d,vid);}else loadZx(vid);
+  }catch(e){box.innerHTML=`<div class="cam-msg">No se pudo abrir la cámara aquí (la vista previa puede bloquearla). Usa “código manual” — en la app nativa funciona al 100%.</div>`;}
+}
+function toggleTorch(){try{torchOn=!torchOn;torchTrack.applyConstraints({advanced:[{torch:torchOn}]});}catch(e){toast('Tu dispositivo no permite linterna aquí');}}
+async function loopNative(d,vid){if(!scanning)return;try{const c=await d.detect(vid);if(c.length)return onDet(c[0].rawValue);}catch(e){}requestAnimationFrame(()=>loopNative(d,vid));}
+function loadZx(vid){const s=document.createElement('script');s.src='https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js';s.onload=()=>{try{zx=new ZXing.BrowserMultiFormatReader();zx.decodeFromVideoElement(vid,r=>{if(r&&scanning)onDet(r.getText());});}catch(e){}};s.onerror=()=>toast('Lector no disponible — usa código manual.');document.body.appendChild(s);}
+function onDet(code){if(!scanning)return;scanning=false;stopCamera();lookup(code);}
+function stopCamera(){scanning=false;if(zx){try{zx.reset();}catch(e){}zx=null;}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}const b=document.getElementById('camBox');if(b)b.innerHTML=`<div class="cam-msg">Cámara detenida. Toca “Activar cámara”.</div>`;const cs=document.getElementById('camStart');if(cs)cs.textContent='Activar cámara';}
+document.getElementById('camStart').onclick=()=>stream?stopCamera():startCamera();
+
+/* ===== MAP ===== */
+let map=null,layers={},userMarker=null;
+function initMap(force){
+  if(map&&!force){setTimeout(()=>map.invalidateSize(),120);return;}
+  if(map){return;}
+  if(!document.getElementById('map'))return;
+  map=L.map('map',{zoomControl:true}).setView([19.428,-99.205],13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap · © CARTO',maxZoom:19}).addTo(map);
+  ['rest','store','syn'].forEach(t=>layers[t]=L.layerGroup().addTo(map));
+  refreshMarkers();
+  setTimeout(()=>map.invalidateSize(),200);
+}
+function refreshMarkers(){
+  if(!map)return;['rest','store','syn'].forEach(t=>layers[t].clearLayers());
+  PLACES.forEach(p=>{
+    if(p.type==='syn'&&(!user||user.guest))return; // sinagogas solo con sesión
+    const sub=p.type==='rest'?`${p.cuisine} · ${p.kosher}`:p.type==='store'?'Tienda multi-abarrotes':`Sinagoga · ${p.cuisine}`;
+    const m=L.circleMarker([p.lat,p.lng],{radius:9,color:'#fff',weight:2,fillColor:COLORS[p.type],fillOpacity:1});
+    m.bindPopup(`<div class="pop"><b>${p.name}</b><small>${sub}${p.cert?' · '+p.cert:''}</small><a href="${p.url}" target="_blank">Cómo llegar →</a></div>`);
+    m.addTo(layers[p.type]);
+  });
+}
+function addUserMarker(){if(!map||!userPos)return;if(userMarker)map.removeLayer(userMarker);
+  userMarker=L.circleMarker([userPos.lat,userPos.lng],{radius:8,color:'#fff',weight:3,fillColor:'#1C3A5E',fillOpacity:1}).addTo(map).bindPopup('Tú estás aquí');map.setView([userPos.lat,userPos.lng],14);}
+
+/* ===== MÁS / PERFIL / AJUSTES / LEGAL ===== */
+function renderMasMenu(){
+  const items=[
+    user&&!user.guest?['perfil','Mi perfil',user.name+' · '+user.points+' pts']:['perfil','Mi perfil','Inicia sesión o invitado'],
+    ['favoritos','Favoritos','Tus productos y lugares guardados'],
+    ['noticias','Noticias y alertas','Nuevos y certificaciones retiradas'],
+    ['blog','Blog','Cultura, kashrut y guías'],
+    ['ajustes','Ajustes','Idioma, tema y notificaciones'],
+    ['contacto','Contacto','Escríbenos o reporta'],
+    ['legal','Legal y privacidad','Términos, privacidad y aviso'],
+    ['admin','Administrador','Cargar productos, lugares, noticias'],
+  ];
+  document.getElementById('masMenu').innerHTML=items.map(([id,h,p])=>`<div class="mitem" onclick="go('${id}')"><div class="mic">›</div><div><h4>${h}</h4><p>${p}</p></div><span class="arr">›</span></div>`).join('');
+}
+function renderProfile(){
+  if(!user){document.getElementById('profPage').innerHTML=`<div class="prof-head"><p class="muted">No has iniciado sesión.</p><button class="btn" onclick="openOverlay('authScreen')">Iniciar sesión</button></div>`;return;}
+  document.getElementById('profPage').innerHTML=`
+    <div class="prof-head"><div class="avatar">${user.name[0]}</div><h3 style="font-family:Fraunces;margin:0">${user.name}</h3>
+    <p class="muted">${user.guest?'Invitado':'Sesión con '+user.method}</p>
+    <div class="pointpill">★ ${user.points} pts de contribución</div></div>
+    <div class="kv"><span>Corriente</span><span>${user.prefs.stream}</span></div>
+    <div class="kv"><span>Nivel kashrut</span><span>${user.prefs.level}</span></div>
+    <div class="kv"><span>Ciudad</span><span>${user.prefs.city}</span></div>
+    <div class="kv"><span>Favoritos</span><span>${user.favs.size}</span></div>
+    <div class="kv"><span>Escaneos</span><span>${user.history.length}</span></div>
+    <button class="btn ghost" style="margin-top:18px" onclick="go('favoritos')">Ver favoritos</button>
+    <button class="btn ghost" onclick="logout()">Cerrar sesión</button>
+    <button class="btn" style="background:var(--alert)" onclick="delAccount()">Eliminar mi cuenta</button>`;
+}
+function logout(){user=null;refreshMarkers();renderMasMenu();go('inicio');openOverlay('authScreen');}
+function delAccount(){if(confirm('¿Eliminar tu cuenta y todos tus datos? Esta acción es permanente.')){user=null;toast('Cuenta eliminada');refreshMarkers();renderMasMenu();go('inicio');openOverlay('authScreen');}}
+function renderFavs(){
+  if(!user||!user.favs.size){document.getElementById('favPage').innerHTML=`<div class="empty">Aún no tienes favoritos.<br>Toca 🤍 en cualquier producto o lugar.</div>`;return;}
+  const out=[];
+  user.favs.forEach(k=>{const kind=k.replace(/\d+$/,'');const id=+k.replace(/\D+/,'');
+    if(kind==='prod'){const p=PRODUCTS.find(x=>x.id===id);if(p)out.push(`<div class="lcard" onclick="openProduct(${id})"><div class="lphoto" style="flex:0 0 80px;width:80px;background:${grad(id)}"><div class="mono" style="font-size:22px">${p.brand[0]}</div></div><div class="lbody"><h4 style="font-size:14px">${p.name}</h4><p class="sub">${p.cert} · ${p.status}</p></div></div>`);}
+    else{const p=PLACES.find(x=>x.id===id);if(p)out.push(`<div class="lcard" onclick="openPlace(${id})"><div class="lphoto" style="background:${grad(id)}"><div class="mono">${p.name[0]}</div></div><div class="lbody"><h4>${p.name}</h4><p class="sub">${p.cuisine||'Tienda'}</p></div></div>`);}});
+  document.getElementById('favPage').innerHTML=`<div class="vlist" style="padding:8px 0">${out.join('')}</div>`;
+}
+function renderSettings(){
+  document.getElementById('setPage').innerHTML=`
+    <p class="muted" style="margin-bottom:14px">Idioma</p>
+    <div class="langrow"><button class="${lang==='es'?'on':''}" onclick="setLang('es')">Español</button><button class="${lang==='en'?'on':''}" onclick="setLang('en')">English</button><button class="${lang==='he'?'on':''}" onclick="setLang('he')">עברית</button></div>
+    <p class="muted" style="margin:18px 0 8px">Apariencia</p>
+    <div class="toggle"><span>Modo oscuro</span><div class="sw ${theme==='dark'?'on':''}" onclick="toggleTheme()"><i></i></div></div>
+    <p class="muted" style="margin:18px 0 8px">Notificaciones</p>
+    <div class="toggle"><span>Alertas de kashrut</span><div class="sw ${notifGranted?'on':''}" onclick="enableNotifs()"><i></i></div></div>
+    <button class="btn ghost" onclick="fireSampleAlert()">Enviar alerta de prueba</button>
+    <p class="muted" style="margin:18px 0 8px">Permisos</p>
+    <button class="btn ghost" onclick="findNear()">Probar permiso de ubicación</button>
+    <button class="btn ghost" onclick="go('scan')">Probar permiso de cámara</button>`;
+}
+function setLang(l){lang=l;applyLang();renderSettings();toast('Idioma: '+({es:'Español',en:'English',he:'עברית'}[l])+'  · (la traducción completa de contenido llega con el backend)');}
+function toggleTheme(){theme=theme==='dark'?'light':'dark';document.body.classList.toggle('dark',theme==='dark');renderSettings();}
+function renderLegal(){
+  document.getElementById('legalPage').innerHTML=`
+    <div class="newsitem new"><div class="lab">Aviso importante</div><h4>Kosher a Prueba es una guía informativa</h4><p>La información se basa en datos de las certificadoras. La autoridad final sobre la kashrut de cualquier producto es la certificadora o tu rabino. Verifica siempre el sello físico en el empaque.</p></div>
+    <div class="mitem" onclick="toast('Abriendo Términos…')"><div class="mic">§</div><div><h4>Términos de uso</h4></div><span class="arr">›</span></div>
+    <div class="mitem" onclick="toast('Abriendo Aviso de privacidad…')"><div class="mic">🔒</div><div><h4>Aviso de privacidad</h4><p>Conforme a la ley mexicana de datos personales</p></div><span class="arr">›</span></div>
+    <div class="mitem" onclick="toast('Abriendo política de datos…')"><div class="mic">🗂️</div><div><h4>Cómo usamos tus datos</h4></div><span class="arr">›</span></div>`;
+}
+function renderContact(){
+  document.getElementById('contactPage').innerHTML=`<p class="muted" style="margin-bottom:16px">¿Detectaste un producto sin sello o un error? Avísanos.</p>
+    <a href="#" onclick="toast('Abriendo WhatsApp…');return false">🟢 WhatsApp · Kosher a Prueba</a>
+    <a href="#" onclick="toast('Abriendo correo…');return false">✉️ contacto@kosheraprueba.mx</a>
+    <a href="#" onclick="toast('Abriendo Instagram…');return false">📷 @kosheraprueba</a>
+    <div style="margin-top:18px" class="field"><label>Reportar un producto</label><textarea rows="4" placeholder="Marca, producto y qué notaste…"></textarea></div>
+    <button class="btn dark" onclick="toast('¡Gracias! Tu reporte llegó a revisión.')">Enviar reporte</button>`;
+}
+
+/* ===== NOTICIAS / BLOG ===== */
+function renderNews(){document.getElementById('newsPage').innerHTML=NEWS.map(n=>`<div class="newsitem ${n.type==='new'?'new':''}"><div class="lab">${n.type==='new'?'Nuevo producto':'Certificación retirada'}</div><h4>${n.title}</h4><p>${n.body}</p><p style="margin-top:8px;font-size:11px;font-weight:600">${n.date}</p></div>`).join('');}
+function renderBlog(){document.getElementById('blogPage').innerHTML=BLOG.map((b,i)=>`<div class="blogc"><div class="bimg" style="background:${grad(i+1)};display:grid;place-items:center"><span style="font-family:Fraunces;font-size:42px;color:rgba(255,255,255,.85)">✦</span></div><div class="bbody"><div class="btag">${b.tag}</div><h3>${b.title}</h3><p>${b.excerpt}</p></div></div>`).join('');}
+
+/* ===== ADMIN ===== */
+let adminUnlocked=false,adminTab='prod';
+function renderAdmin(){
+  const el=document.getElementById('adminPage');
+  if(!adminUnlocked){el.innerHTML=`<div class="pinpad"><p class="muted" style="margin-bottom:14px">Acceso restringido</p><div class="field"><label>PIN de administrador</label><input id="pin" inputmode="numeric" type="password" placeholder="••••"></div><button class="btn dark" onclick="checkPin()">Entrar</button><p class="muted" style="margin-top:12px;font-size:11px">Demo: PIN 1948</p></div>`;return;}
+  const modCount=moderation.filter(m=>m.status==='pendiente').length;
+  el.innerHTML=`<div class="admin-tabs">
+    <button class="${adminTab==='prod'?'on':''}" onclick="adminTab='prod';renderAdmin()">Producto</button>
+    <button class="${adminTab==='place'?'on':''}" onclick="adminTab='place';renderAdmin()">Lugar</button>
+    <button class="${adminTab==='news'?'on':''}" onclick="adminTab='news';renderAdmin()">Noticia</button>
+    <button class="${adminTab==='mod'?'on':''}" onclick="adminTab='mod';renderAdmin()">Moderación${modCount?' ('+modCount+')':''}</button>
+  </div>${adminTab==='prod'?formProd():adminTab==='place'?formPlace():adminTab==='news'?formNews():formMod()}`;
+}
+function checkPin(){if(document.getElementById('pin').value==='1948'){adminUnlocked=true;renderAdmin();toast('Acceso concedido');}else toast('PIN incorrecto');}
+function formProd(){return `<div class="field"><label>Nombre</label><input id="ap_name" placeholder="Ej. Galletas marca X 200 g"></div>
+  <div class="field"><label>Marca</label><input id="ap_brand"></div>
+  <div class="field"><label>Categoría</label><select id="ap_cat">${CATS.filter(c=>c!=='Todos').map(c=>`<option>${c}</option>`).join('')}</select></div>
+  <div class="field"><label>Estándar</label><select id="ap_status"><option>Pareve</option><option>Lácteo</option><option>Carne</option></select></div>
+  <div class="field check"><input type="checkbox" id="ap_pesaj"><label style="margin:0">Apto Le-Pésaj</label></div>
+  <div class="field"><label>Certificadora</label><select id="ap_cert"><option>KMD México</option><option>Kosher Alef</option><option>One Kosher</option><option>OU</option></select></div>
+  <div class="field"><label>Código de barras</label><input id="ap_code" inputmode="numeric"></div>
+  <div class="field"><label>Foto</label><input type="file" accept="image/*" id="ap_img"></div>
+  <button class="btn" onclick="addProduct()">Agregar producto</button>`;}
+function formPlace(){return `<div class="field"><label>Nombre</label><input id="al_name"></div>
+  <div class="field"><label>Tipo</label><select id="al_type"><option value="rest">Restaurante</option><option value="store">Tienda</option><option value="syn">Sinagoga</option></select></div>
+  <div class="field"><label>Cocina / Corriente</label><input id="al_cuisine" placeholder="Ej. Parrilla / Sefaradí"></div>
+  <div class="field"><label>Kosher (rest.)</label><select id="al_kosher"><option>Carne</option><option>Lácteo</option><option>Pareve</option></select></div>
+  <div class="field"><label>Certificadora</label><input id="al_cert"></div>
+  <div class="field"><label>Link de Google Maps</label><input id="al_url" placeholder="https://maps.app.goo.gl/…"></div>
+  <div class="field"><label>Foto</label><input type="file" accept="image/*" id="al_img"></div>
+  <button class="btn" onclick="addPlace()">Agregar lugar</button>`;}
+function formNews(){return `<div class="field"><label>Tipo</label><select id="an_type"><option value="alert">Certificación retirada (alerta)</option><option value="new">Nuevo producto</option></select></div>
+  <div class="field"><label>Título</label><input id="an_title"></div>
+  <div class="field"><label>Detalle</label><textarea id="an_body" rows="3"></textarea></div>
+  <button class="btn" onclick="addNews()">Publicar (y enviar notificación)</button>`;}
+function formMod(){const list=moderation.filter(m=>m.status==='pendiente');
+  if(!list.length)return `<div class="empty">No hay productos pendientes de revisión.</div>`;
+  return list.map(m=>`<div class="newsitem"><div class="lab">Pendiente</div><h4>Código ${m.code}</h4><p>Enviado por un usuario para revisión rabínica.</p>
+    <div class="sheetbtns"><button class="btn" style="margin-top:8px" onclick="approveMod(${m.id},'${m.code}')">Aprobar y publicar</button><button class="btn ghost" style="margin-top:8px" onclick="rejectMod(${m.id})">Rechazar</button></div></div>`).join('');
+}
+function approveMod(id,code){const m=moderation.find(x=>x.id===id);if(m)m.status='ok';PRODUCTS.unshift({id:Date.now(),name:'Producto en revisión '+code,brand:'Por completar',cat:'Abarrotes',status:'Pareve',pesaj:false,cert:'KMD México',code,img:null});renderProducts();renderAdmin();toast('Aprobado y publicado ✓');}
+function rejectMod(id){const m=moderation.find(x=>x.id===id);if(m)m.status='rej';renderAdmin();toast('Rechazado');}
+function fileToUrl(input,cb){const f=input&&input.files&&input.files[0];if(!f){cb(null);return;}const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f);}
+function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function addProduct(){const name=val('ap_name');if(!name)return toast('Falta el nombre');fileToUrl(document.getElementById('ap_img'),img=>{PRODUCTS.unshift({id:Date.now(),name,brand:val('ap_brand')||'—',cat:val('ap_cat'),status:val('ap_status'),pesaj:document.getElementById('ap_pesaj').checked,cert:val('ap_cert'),code:val('ap_code')||'—',img});renderProducts();toast('Producto agregado ✓');renderAdmin();});}
+function addPlace(){const name=val('al_name');if(!name)return toast('Falta el nombre');const type=val('al_type');fileToUrl(document.getElementById('al_img'),img=>{const o={id:Date.now(),type,name,cuisine:val('al_cuisine'),cert:val('al_cert'),url:val('al_url')||'#',lat:19.43+(Math.random()-.5)*.04,lng:-99.20+(Math.random()-.5)*.05,img,reviews:[]};if(type==='rest')o.kosher=val('al_kosher');if(type==='store')o.depts=['Abarrotes'];PLACES.push(o);renderRest();renderStore();renderHome();refreshMarkers();toast('Lugar agregado ✓');renderAdmin();});}
+function addNews(){const title=val('an_title');if(!title)return toast('Falta el título');const type=val('an_type');NEWS.unshift({type,title,body:val('an_body'),date:'Ahora'});renderNews();renderHome();if(type==='alert')fireSampleAlert();toast('Noticia publicada ✓');renderAdmin();}
+
+/* ===== INIT ===== */
+renderHome();renderRest();renderStore();renderPChips();renderProducts();renderMasMenu();
+document.getElementById('q').addEventListener('input',renderProducts);
+renderOb();openOverlay('onboarding');
+</script>
+</body>
+</html>
