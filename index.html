@@ -362,10 +362,17 @@ function applyLang(){
   renderHome();renderMasMenu();
 }
 
-/* ===== SUPABASE ===== */
+/* ===== SUPABASE (tolerante a fallos) ===== */
 const SUPABASE_URL = 'https://qokcrssxlipgvwixgpjz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_2jxUfBifSCZhjt_CLmmh9w_7F6dct0T';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let sbClient = null;
+try{
+  if(window.supabase && window.supabase.createClient){
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+}catch(e){
+  console.warn('Supabase no disponible, usando datos locales:', e.message);
+}
 
 /* ===== DATA (FALLBACK + DYNAMIC) ===== */
 const GRAD=['linear-gradient(135deg,#1C3A5E,#10243E)','linear-gradient(135deg,#9B2D33,#6e1f24)','linear-gradient(135deg,#1F6F54,#14503c)','linear-gradient(135deg,#2B5E9E,#1d4275)','linear-gradient(135deg,#B4863C,#8a6526)'];
@@ -431,8 +438,9 @@ function distKm(a,b){const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.l
 
 /* ===== LOAD DATA FROM SUPABASE ===== */
 async function loadProductsFromSupabase(){
+  if(!sbClient)return false;
   try{
-    const {data,error}=await supabase.from('productos').select('*');
+    const {data,error}=await sbClient.from('productos').select('*');
     if(error)throw error;
     if(data&&data.length>0){
       PRODUCTS=data.map(p=>({...p}));
@@ -747,10 +755,10 @@ function checkPin(){if(document.getElementById('pin').value==='1948'){adminUnloc
 function formMod(){const list=moderation.filter(m=>m.status==='pendiente');return list.length?list.map(m=>`<div class="newsitem"><h4>Código ${m.code}</h4><button class="btn" onclick="toast('Ok')">Aprobar</button></div>`).join(''):`<div class="empty">Sin pendientes</div>`;}
 
 /* ===== INIT ===== */
-async function init(){
+function init(){
+  // Renderizar de inmediato (NO esperar)
   renderOb();
   openOverlay('onboarding');
-  await loadProductsFromSupabase();
   renderHome();
   renderRest();
   renderStore();
@@ -758,6 +766,17 @@ async function init(){
   renderProducts();
   renderMasMenu();
   document.getElementById('q').addEventListener('input',renderProducts);
+  
+  // Cargar Supabase en background (sin bloquear)
+  loadProductsFromSupabase().then(ok=>{
+    if(ok){
+      console.log('✓ Datos de Supabase cargados');
+      renderProducts();
+      renderRest();
+      renderStore();
+      renderHome();
+    }
+  }).catch(e=>console.log('Fallback a datos hardcodeados'));
 }
 
 init();
